@@ -1,0 +1,37 @@
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Montserrat:wght@700&display=swap');
+@import url('https://fonts.cdnfonts.com/css/codec-pro');
+@import "tailwindcss";
+
+@theme {
+  --color-deep-black: #090909;
+  --color-stark-white: #FFFFFF;
+  --color-tech-orange: #F26522;
+  --color-industrial-grey: #8A8A8A;
+  --font-heading: 'Archivo Black', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-codec: 'Codec Pro', sans-serif;
+  --font-montserrat: 'Montserrat', sans-serif;
+  --font-nero: 'Nero', sans-serif;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-deep-black);
+    color: var(--color-stark-white);
+    font-family: var(--font-body);
+  }
+}
+
+/* Noise grain texture */
+.noise-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.4;
+  pointer-events: none;
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAAAUVBMVEUFBQUDAwMEBAQGBgYAAAAICAgFBQUHBwcDBwcJCQkEBAQCAQEFBgYIBwcGBgYDAwMHCAcFBAUICQkEBAMGBgUGBQUFBQUFBgYHBwcICAgEBAT///8bMuy0AAAAGnRSTlMWGBkaISIjJCUmKCkqKy0uMjM0Njc4OTs8PhYIE/4AAACxSURBVHja7dTBDoAgDEDRMnROFBX//0MNLsQYl7pz8S2kSZsOiH+oQy6BCAQhEI9AAgJJCKQgkBeBVARSEUj+ZNb2sGd/7S5JdmNv2mzqH+5J1jnfe/yU5Jez3fOzJNWNvWp9Pk+S7MZ+bJLss3YrSfbjPZ0k+6y99SdJ69geIMluaneTtA9JziZ7SdI+a5LU73bfJOufJEn2abuVJK1ja6YkO/IlqZYkq7n3eAMZND7bfhshJwAAAABJRU5ErkJggg==");
+  background-repeat: repeat;
+  background-size: 50px 50px;
+  mix-blend-mode: overlay;
+}
