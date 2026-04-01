@@ -20,6 +20,32 @@
     color: var(--color-stark-white);
     font-family: var(--font-body);
   }
+
+  /* Only hide cursor on devices with a fine pointer (mouse/trackpad) */
+  @media (pointer: fine) {
+    body {
+      cursor: none;
+    }
+
+    a,
+    button,
+    [role="button"] {
+      cursor: none;
+    }
+  }
+
+  /* Screen-reader only text */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
 }
 
 /* Noise grain texture */
@@ -34,4 +60,19 @@
   background-repeat: repeat;
   background-size: 50px 50px;
   mix-blend-mode: overlay;
+}
+
+/* Slow spin for play button circular text */
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 12s linear infinite;
 }

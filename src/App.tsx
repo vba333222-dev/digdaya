@@ -1,20 +1,17 @@
-import { useEffect, createContext, useContext, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import Lenis from 'lenis';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
+import { VideoReel } from './components/VideoReel';
 import { Services } from './components/Services';
 import { Vision } from './components/Vision';
 import { Footer } from './components/Footer';
-
-// Share the Lenis scroll value globally so components can read it
-export const ScrollContext = createContext<{ scrollY: number }>({ scrollY: 0 });
-export const useScrollY = () => useContext(ScrollContext);
+import { Preloader } from './components/Preloader';
+import { CustomCursor } from './components/CustomCursor';
 
 function App() {
-  const [scrollY, setScrollY] = useState(0);
   const lenisRef = useRef<Lenis | null>(null);
 
-  // Lenis Smooth Scroll Setup
   useEffect(() => {
     const lenis = new Lenis({
       duration: 1.2,
@@ -28,11 +25,6 @@ function App() {
 
     lenisRef.current = lenis;
 
-    // Expose scroll position on every frame
-    lenis.on('scroll', (e: { animatedScroll: number }) => {
-      setScrollY(e.animatedScroll);
-    });
-
     function raf(time: number) {
       lenis.raf(time);
       requestAnimationFrame(raf);
@@ -44,15 +36,20 @@ function App() {
   }, []);
 
   return (
-    <ScrollContext.Provider value={{ scrollY }}>
+    <>
+      <Preloader />
+      <CustomCursor />
       <div className="min-h-screen text-stark-white w-full overflow-x-clip relative selection:bg-tech-orange selection:text-white bg-[#090909]">
         <Header />
-        <Hero />
-        <Services />
-        <Vision />
+        <main id="main">
+          <Hero />
+          <VideoReel />
+          <Services />
+          <Vision />
+        </main>
         <Footer />
       </div>
-    </ScrollContext.Provider>
+    </>
   );
 }
 

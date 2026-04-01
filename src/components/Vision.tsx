@@ -68,12 +68,12 @@ export const Vision = () => {
 
     // Semantic groups
     const group1Words = ['We', 'engineer'];
-    const group2Words = ['physical', '&', 'digital'];       // "and" → "&"
+    // group2 is rendered as explicit JSX below (with inline image masks)
     const group3Words = ['For', 'globally', 'recognized'];
     const group4Words = ['Companies', 'to', 'early', 'stage'];
     const group5Words = ['Startups.'];
 
-    const allWords = [...group1Words, ...group2Words, ...group3Words, ...group4Words, ...group5Words];
+    const allWords = [...group1Words, 'physical', '&', 'digital', 'future', ...group3Words, ...group4Words, ...group5Words];
     const total = allWords.length;
     let idx = 0;
 
@@ -86,10 +86,13 @@ export const Vision = () => {
     const outlineClass = 'text-[8vw] md:text-[4.5vw] font-black leading-[0.9] tracking-[-0.03em] uppercase';
 
     const labelOpacity = useTransform(scrollYProgress, [0.12, 0.22], [0, 1]);
+    const imageParallaxY = useTransform(scrollYProgress, [0, 1], ['-20%', '20%']);
+    const bgTextOpacity = useTransform(scrollYProgress, [0.1, 0.3, 0.7, 0.9], [0, 0.03, 0.03, 0]);
 
     return (
         <section
             ref={containerRef}
+            id="vision"
             className="w-full relative min-h-[250vh] flex items-center justify-center"
             style={{ background: '#050505' }}
         >
@@ -107,7 +110,7 @@ export const Vision = () => {
             <div className="sticky top-0 h-screen w-full flex items-center overflow-hidden">
                 {/* Background decorative giant text */}
                 <motion.div
-                    style={{ opacity: useTransform(scrollYProgress, [0.1, 0.3, 0.7, 0.9], [0, 0.03, 0.03, 0]) }}
+                    style={{ opacity: bgTextOpacity }}
                     className="absolute inset-0 flex items-center justify-center pointer-events-none select-none"
                 >
                     <span
@@ -156,24 +159,56 @@ export const Vision = () => {
 
                         <RevealLine range={[0.18, 0.3]} progress={scrollYProgress} width="30%" />
 
-                        {/* "physical & digital" — massive white, "&" as symbol */}
-                        <div className="flex flex-wrap items-baseline mt-2">
-                            {group2Words.map((word) => {
-                                const i = idx++;
-                                return (
-                                    <RevealWord
-                                        key={i}
-                                        word={word}
-                                        range={getRange(i, total)}
-                                        progress={scrollYProgress}
-                                        className="text-[14vw] md:text-[8vw] font-black leading-[0.85] tracking-[-0.04em] uppercase"
-                                        style={{
-                                            fontFamily: 'var(--font-nero)',
-                                            color: word === '&' ? '#F26522' : '#FFFFFF',
-                                        }}
-                                    />
-                                );
-                            })}
+                        {/* "physical [mask] & digital [mask] future" — explicit JSX with inline image masks */}
+                        <div className="flex flex-wrap items-center mt-2">
+                            {/* PHYSICAL */}
+                            <RevealWord
+                                word="physical"
+                                range={getRange(idx++, total)}
+                                progress={scrollYProgress}
+                                className="text-[14vw] md:text-[8vw] font-black leading-[0.85] tracking-[-0.04em] uppercase"
+                                style={{ fontFamily: 'var(--font-nero)', color: '#FFFFFF' }}
+                            />
+                            {/* Inline image mask 1 */}
+                            <span className="inline-block align-middle w-[20vw] md:w-[12vw] h-[10vw] md:h-[6vw] rounded-full overflow-hidden relative mx-[1vw] bg-[#1a1a1a]">
+                                <motion.img
+                                    src="https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=2070&auto=format&fit=crop"
+                                    className="absolute top-0 left-0 w-full h-[140%] object-cover mix-blend-luminosity opacity-80"
+                                    style={{ y: imageParallaxY }}
+                                />
+                            </span>
+                            {/* & */}
+                            <RevealWord
+                                word="&"
+                                range={getRange(idx++, total)}
+                                progress={scrollYProgress}
+                                className="text-[14vw] md:text-[8vw] font-black leading-[0.85] tracking-[-0.04em] uppercase"
+                                style={{ fontFamily: 'var(--font-nero)', color: '#F26522' }}
+                            />
+                            {/* DIGITAL */}
+                            <RevealWord
+                                word="digital"
+                                range={getRange(idx++, total)}
+                                progress={scrollYProgress}
+                                className="text-[14vw] md:text-[8vw] font-black leading-[0.85] tracking-[-0.04em] uppercase"
+                                style={{ fontFamily: 'var(--font-nero)', color: '#FFFFFF' }}
+                            />
+                            {/* Inline image mask 2 */}
+                            <span className="inline-block align-middle w-[20vw] md:w-[12vw] h-[10vw] md:h-[6vw] rounded-full overflow-hidden relative mx-[1vw] bg-[#1a1a1a]">
+                                <motion.img
+                                    src="https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=2070&auto=format&fit=crop"
+                                    className="absolute top-0 left-0 w-full h-[140%] object-cover mix-blend-luminosity opacity-80"
+                                    style={{ y: imageParallaxY }}
+                                />
+                            </span>
+                            {/* FUTURE */}
+                            <RevealWord
+                                word="future"
+                                range={getRange(idx++, total)}
+                                progress={scrollYProgress}
+                                className="text-[14vw] md:text-[8vw] font-black leading-[0.85] tracking-[-0.04em] uppercase"
+                                style={{ fontFamily: 'var(--font-nero)', color: '#FFFFFF' }}
+                            />
                         </div>
 
                         <RevealLine range={[0.32, 0.44]} progress={scrollYProgress} width="60%" color="rgba(255,255,255,0.08)" />

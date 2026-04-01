@@ -35,7 +35,8 @@ const LetterReveal = ({
 
     return (
         <span ref={ref} className={`block overflow-hidden ${className}`} style={style}>
-            <span className="flex flex-wrap">
+            <span className="sr-only">{text}</span>
+            <span className="flex flex-wrap" aria-hidden="true">
                 {text.split('').map((char, i) => (
                     <motion.span
                         key={i}
@@ -107,6 +108,7 @@ export const Footer = () => {
     return (
         <footer
             ref={containerRef}
+            id="contact"
             className="w-full relative overflow-hidden"
             style={{ background: '#050505' }}
         >
@@ -156,6 +158,34 @@ export const Footer = () => {
                         hello@digdaya.id →
                     </motion.a>
                 </motion.div>
+
+                {/* CTA — Get in Touch */}
+                <div className="mb-16 md:mb-24">
+                    <motion.a
+                        href="mailto:hello@digdaya.id"
+                        className="group block cursor-none"
+                        whileHover="hover"
+                        initial="idle"
+                    >
+                        <span className="text-[0.6rem] font-bold tracking-[0.3em] text-white/20 uppercase block mb-4">
+                            Ready to start?
+                        </span>
+                        <span
+                            className="text-[10vw] md:text-[5.5vw] font-black leading-[0.9] tracking-[-0.03em] uppercase text-white/80 group-hover:text-[#F26522] transition-colors duration-500 block"
+                            style={{ fontFamily: 'var(--font-nero)' }}
+                        >
+                            Get in Touch →
+                        </span>
+                        <motion.div
+                            className="h-[2px] bg-[#F26522] mt-4 origin-left"
+                            variants={{
+                                idle: { scaleX: 0 },
+                                hover: { scaleX: 1 },
+                            }}
+                            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }}
+                        />
+                    </motion.a>
+                </div>
 
                 {/* Giant logo text */}
                 <div className="mb-20 md:mb-28">

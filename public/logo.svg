@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="40" height="44" viewBox="0 0 40 44" fill="none">
+  <!-- Small circle (grey, upper-left) -->
+  <circle cx="6" cy="6" r="4.5" fill="#8C8C8C"/>
+  <!-- Grey pill (behind, rotated ~28deg) -->
+  <rect x="3" y="8" width="10" height="30" rx="5" fill="#8C8C8C" transform="rotate(-28 8 23)"/>
+  <!-- Orange pill (front, rotated ~28deg, overlapping) -->
+  <rect x="11" y="6" width="10" height="32" rx="5" fill="#F26522" transform="rotate(-28 16 22)"/>
+</svg>

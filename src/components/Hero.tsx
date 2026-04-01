@@ -1,13 +1,17 @@
 import { useRef } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
-import { Canvas, useFrame } from '@react-three/fiber';
+import { motion, useScroll, useTransform, useInView } from 'framer-motion';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 
 // --- 3D Object ---
 const AbstractShape = () => {
     const meshRef = useRef<THREE.Mesh>(null);
+    const { gl } = useThree();
+    const canvasRef = useRef(gl.domElement);
+    const inView = useInView(canvasRef);
+
     useFrame((state, delta) => {
-        if (!meshRef.current) return;
+        if (!meshRef.current || !inView) return;
         const targetX = (state.pointer.y * Math.PI) / 4;
         const targetY = (state.pointer.x * Math.PI) / 4;
         meshRef.current.rotation.x = THREE.MathUtils.lerp(meshRef.current.rotation.x, targetX, 0.05);
@@ -37,8 +41,10 @@ const AnimatedLine = ({
     const chars = text.split('');
     return (
         <span className={`block overflow-hidden ${className}`} style={style}>
+            <span className="sr-only">{text}</span>
             <motion.span
                 className="flex"
+                aria-hidden="true"
                 initial="hidden"
                 animate="visible"
                 variants={{
@@ -96,6 +102,10 @@ export const Hero = () => {
             style={{ opacity: sectionOpacity }}
             className="h-[120vh] w-full bg-[#000000] text-white flex items-center relative"
         >
+            {/* Skip to content (a11y) */}
+            <a href="#services" className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[200] focus:bg-[#F26522] focus:text-white focus:px-4 focus:py-2 focus:text-sm">
+                Skip to content
+            </a>
             {/* Two-column layout */}
             <div className="w-full max-w-[1600px] mx-auto grid grid-cols-1 md:grid-cols-2 items-center h-full px-6 md:px-12 lg:px-20">
 
@@ -163,6 +173,21 @@ export const Hero = () => {
                     />
                 </motion.div>
             </div>
+
+            {/* Scroll indicator */}
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 2, duration: 1 }}
+                className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 pointer-events-none"
+            >
+                <span className="text-[0.55rem] font-mono tracking-[0.3em] text-white/25 uppercase">Scroll</span>
+                <motion.div
+                    animate={{ y: [0, 8, 0] }}
+                    transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+                    className="w-[1px] h-6 bg-gradient-to-b from-[#F26522]/60 to-transparent"
+                />
+            </motion.div>
         </motion.section>
     );
 };
