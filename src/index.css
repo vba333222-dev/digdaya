@@ -42,9 +42,10 @@
     font-family: var(--font-body);
   }
 
-  /* Hide OS cursor on devices with fine pointer, keep default on mobile. */
+  /* Hide OS cursor on devices with fine pointer, keep default on mobile.
+     Exclude admin pages (marked with data-admin attribute). */
   @media (pointer: fine) {
-    * {
+    :root:not(:has([data-admin])) * {
       cursor: none !important;
     }
   }

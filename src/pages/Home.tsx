@@ -60,8 +60,8 @@ export function Home() {
     return (
         <>
             <SEO
-                title=""
-                description="Digdaya Teknokraf — Engineering the physical frontier. Hardware, connectivity, security, and software solutions for Indonesia and beyond."
+                title="Digdaya | Home"
+                description="Establishing the backbone of modern industry through rigorous engineering, high-performance hardware, and decentralized protocols."
             />
             <Hero />
             <Vision />

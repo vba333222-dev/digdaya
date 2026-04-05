@@ -1,4 +1,4 @@
-import { useRef, useMemo, useEffect, useState } from 'react';
+import { useRef, useMemo, useEffect } from 'react';
 import { motion, useScroll, useTransform, useInView } from 'framer-motion';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
@@ -247,7 +247,7 @@ const AdvancedSatellite = () => {
     const { gl, clock } = useThree();
     const canvasEl = useRef(gl.domElement);
     const inView = useInView(canvasEl);
-    const [hovered, setHovered] = useState(false);
+    const hovered = useRef(false);
 
     // ── Materials ── CYAN COLOR SCHEME ─────────
     // Primary wireframe — bright cyan, crisp
@@ -357,7 +357,7 @@ const AdvancedSatellite = () => {
         );
 
         // 2. Logika Hover: Transisi warna material wireframe secara halus
-        const targetColor = new THREE.Color(hovered ? '#F26522' : '#00e5ff');
+        const targetColor = new THREE.Color(hovered.current ? '#F26522' : '#00e5ff');
         wBright.color.lerp(targetColor, 0.1);
         wMid.color.lerp(targetColor, 0.1);
 
@@ -417,11 +417,11 @@ const AdvancedSatellite = () => {
             position={[-0.35, 0, 0]}
             onPointerOver={(e) => {
                 e.stopPropagation();
-                setHovered(true);
+                hovered.current = true;
             }}
             onPointerOut={(e) => {
                 e.stopPropagation();
-                setHovered(false);
+                hovered.current = false;
             }}
         >
 

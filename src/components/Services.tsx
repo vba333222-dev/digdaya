@@ -1,51 +1,13 @@
 import { useRef } from 'react';
 import { motion, useScroll, useTransform, useMotionValueEvent } from 'framer-motion';
 import { NoiseTexture } from './NoiseTexture';
-
-const servicesList = [
-    {
-        num: '01',
-        title: 'HARDWARE &\nINFRA',
-        items: ['Semiconductor', 'Computer Assembly', 'Special Machinery', 'Measuring Instruments'],
-        accent: '#F26522',
-        description: 'Building the physical backbone of modern technology infrastructure.',
-        imageId: 'r9oezyka89xjs8gnnnoc'
-    },
-    {
-        num: '02',
-        title: 'CONNECTIVITY',
-        items: ['Wireless & Satellite', 'IoT Consulting'],
-        accent: '#FFFFFF',
-        description: 'Bridging the gap between devices, networks and people.',
-        imageId: 'uhhynxanvd8avfeeajj3'
-    },
-    {
-        num: '03',
-        title: 'SECURITY &\nTRUST',
-        items: ['InfoSec Consulting', 'Digital Identity', 'Electronic Certificates'],
-        accent: '#F26522',
-        description: 'Fortifying digital ecosystems with unbreakable trust layers.',
-        imageId: 'hloc1zsblucjgfchd0e9'
-    },
-    {
-        num: '04',
-        title: 'SOFTWARE &\nTECH',
-        items: ['Blockchain', 'Immersive Media (VR/AR)', 'Data Processing', 'Hosting', 'Web Portals'],
-        accent: '#FFFFFF',
-        description: 'Crafting intelligent systems that power the next generation.',
-        imageId: 'f0hps0zc22jtls7c9mz5'
-    },
-    {
-        num: '05',
-        title: 'CREATIVE\nCONSULTING',
-        items: ['Engineering Consulting', 'Multimedia Services', 'Advertising'],
-        accent: '#F26522',
-        description: 'Where strategic vision meets creative execution.',
-        imageId: 'hlj4trbjlz53ivtgyuvs'
-    },
-];
+import { useContent } from '../admin/ContentContext';
+import type { HomeService } from '../admin/siteContent';
 
 const clamp = (v: number, min: number, max: number) => Math.max(min, Math.min(max, v));
+
+// Service type alias for component props
+type ServiceItem = HomeService;
 
 const CompetencyItem = ({
     item,
@@ -85,7 +47,7 @@ const ServiceCard = ({
     service,
     total,
 }: {
-    service: (typeof servicesList)[0];
+    service: ServiceItem;
     total: number;
 }) => {
     const isOrange = service.accent === '#F26522';
@@ -259,6 +221,8 @@ const ServiceCard = ({
 };
 
 export const Services = () => {
+    const { content } = useContent();
+    const servicesList = content.homeServices;
     const sectionRef = useRef<HTMLElement>(null);
     const progressTextRef = useRef<HTMLSpanElement>(null);
 

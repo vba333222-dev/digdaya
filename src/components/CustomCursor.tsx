@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, useMotionValue, useSpring } from 'framer-motion';
 
 // SVG logo Digdaya — path diambil langsung dari file asli.
@@ -69,6 +69,7 @@ export const CustomCursor = () => {
     const cursorY = useSpring(mouseY, springConfig);
 
     const isTouchDevice = typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
+    const [isHovering, setIsHovering] = useState(false);
 
     useEffect(() => {
         if (isTouchDevice) return;
@@ -78,8 +79,29 @@ export const CustomCursor = () => {
             mouseY.set(e.clientY - 6);
         };
 
+        const handleMouseOver = (e: MouseEvent) => {
+            const target = e.target as HTMLElement;
+            if (target.closest('a, button, [role="button"]')) {
+                setIsHovering(true);
+            }
+        };
+
+        const handleMouseOut = (e: MouseEvent) => {
+            const target = e.target as HTMLElement;
+            if (target.closest('a, button, [role="button"]')) {
+                setIsHovering(false);
+            }
+        };
+
         window.addEventListener('mousemove', moveCursor);
-        return () => window.removeEventListener('mousemove', moveCursor);
+        window.addEventListener('mouseover', handleMouseOver);
+        window.addEventListener('mouseout', handleMouseOut);
+
+        return () => {
+            window.removeEventListener('mousemove', moveCursor);
+            window.removeEventListener('mouseover', handleMouseOver);
+            window.removeEventListener('mouseout', handleMouseOut);
+        };
     }, [mouseX, mouseY, isTouchDevice]);
 
     if (isTouchDevice) {
@@ -88,11 +110,16 @@ export const CustomCursor = () => {
 
     return (
         <motion.div
-            className="fixed top-0 left-0 z-[9999] pointer-events-none hidden md:block"
+            className="fixed top-0 left-0 z-[9999] pointer-events-none hidden md:block mix-blend-difference"
             style={{
                 x: cursorX,
                 y: cursorY,
             }}
+            animate={{
+                scale: isHovering ? 1.5 : 1,
+                opacity: isHovering ? 0.8 : 1
+            }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
         >
             <DigdayaIcon />
         </motion.div>

@@ -2,69 +2,14 @@ import { useRef, useState } from 'react';
 import { motion, useInView, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { NoiseTexture } from '../components/NoiseTexture';
 import { SEO } from '../components/SEO';
+import { useContent } from '../admin/ContentContext';
+import type { DetailedService } from '../admin/siteContent';
 
 // ─────────────────────────────────────────────
 // CONSTANTS
 // ─────────────────────────────────────────────
-const ORANGE = '#F26522';
-
-const services = [
-    {
-        id: '01',
-        title: 'Platform Engineering',
-        short: 'Build',
-        tags: ['Backend', 'API Design', 'Cloud Infra', 'DevOps'],
-        body: 'We architect and engineer B2B platforms that hold under real production pressure — distributed systems, event-driven architecture, and infrastructure that scales without ceremony.',
-        deliverables: ['System Architecture', 'API Development', 'CI/CD Pipelines', 'Cloud Infrastructure', 'Performance Tuning'],
-        duration: '8–24 wks',
-        accent: '#1a3a6b',
-        accentLight: '#4f8fff',
-    },
-    {
-        id: '02',
-        title: 'Product Design',
-        short: 'Design',
-        tags: ['UX Research', 'UI Systems', 'Prototyping', 'Figma'],
-        body: 'Brutalist by conviction — every design decision is structural, not decorative. We build design systems that scale across products and teams without losing coherence.',
-        deliverables: ['Design System', 'UI/UX Flows', 'Interactive Prototypes', 'Component Library', 'Design Tokens'],
-        duration: '4–12 wks',
-        accent: '#3a1a00',
-        accentLight: ORANGE,
-    },
-    {
-        id: '03',
-        title: 'IoT & Embedded Systems',
-        short: 'Connect',
-        tags: ['Firmware', 'Edge Computing', 'Protocols', 'RTOS'],
-        body: 'From microcontroller firmware to cloud telemetry pipelines — we close the gap between the physical and the digital. Industrial-grade reliability, engineered from both ends.',
-        deliverables: ['Firmware Development', 'Edge Infrastructure', 'Protocol Integration', 'Sensor Systems', 'OTA Updates'],
-        duration: '12–32 wks',
-        accent: '#001a12',
-        accentLight: '#22c55e',
-    },
-    {
-        id: '04',
-        title: 'Brand Identity',
-        short: 'Identity',
-        tags: ['Strategy', 'Visual Identity', 'Motion', 'Print'],
-        body: 'Identity as infrastructure. We construct brand systems that operate across every touchpoint — from product UI to physical signage — with structural precision.',
-        deliverables: ['Brand Strategy', 'Visual Identity', 'Motion Guidelines', 'Brand Book', 'Asset Systems'],
-        duration: '4–8 wks',
-        accent: '#1a001a',
-        accentLight: '#a855f7',
-    },
-    {
-        id: '05',
-        title: 'Data & Intelligence',
-        short: 'Analyze',
-        tags: ['Analytics', 'ML Systems', 'Dashboards', 'ETL'],
-        body: 'Operational intelligence built into your product — not bolted on. We build data pipelines, analytics layers, and ML inference systems that inform decisions at scale.',
-        deliverables: ['Data Architecture', 'Analytics Dashboards', 'ML Pipeline', 'ETL Systems', 'Reporting Layer'],
-        duration: '6–16 wks',
-        accent: '#001a1a',
-        accentLight: '#06b6d4',
-    },
-];
+// Type alias for component props
+type ServiceItem = DetailedService;
 
 const process = [
     { step: 'I', label: 'Discover', desc: 'Deep audit of your technical landscape, constraints, and goals.' },
@@ -150,7 +95,7 @@ const ServiceRow = ({
     isOpen,
     onToggle,
 }: {
-    service: typeof services[0];
+    service: ServiceItem;
     index: number;
     isOpen: boolean;
     onToggle: () => void;
@@ -404,7 +349,11 @@ const ProcessStep = ({ step, index }: { step: typeof process[0]; index: number }
 // ─────────────────────────────────────────────
 // MAIN PAGE
 // ─────────────────────────────────────────────
+const ORANGE = '#F26522';
+
 export function ServicesPage() {
+    const { content } = useContent();
+    const services = content.services;
     const [openIndex, setOpenIndex] = useState<number | null>(0);
 
     const heroRef = useRef<HTMLDivElement>(null);

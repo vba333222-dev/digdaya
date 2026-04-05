@@ -1,87 +1,16 @@
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useMemo } from 'react';
 import { motion, useInView, useMotionValue, useSpring, AnimatePresence } from 'framer-motion';
 import { NoiseTexture } from '../components/NoiseTexture';
 import { SEO } from '../components/SEO';
+import { useContent } from '../admin/ContentContext';
+import type { Project } from '../admin/siteContent';
 
 // ─────────────────────────────────────────────
 // CONSTANTS
 // ─────────────────────────────────────────────
-const ORANGE = '#F26522';
+// Type alias for component props
+type ProjectItem = Project;
 
-const CATEGORIES = ['All', 'Platform', 'Identity', 'System', 'Interface'];
-
-const projects = [
-    {
-        id: '01',
-        title: 'Nexus B2B Portal',
-        category: 'Platform',
-        tags: ['Engineering', 'React', 'Node.js'],
-        year: '2024',
-        desc: 'Enterprise procurement platform handling 10K+ daily transactions across distributed supply chains.',
-        accent: '#1a1a2e',
-        accentText: '#4f6bff',
-        featured: true,
-    },
-    {
-        id: '02',
-        title: 'Krakow Design System',
-        category: 'System',
-        tags: ['Design System', 'Figma', 'Storybook'],
-        year: '2024',
-        desc: 'Unified component architecture for a 200+ product suite across SEA markets.',
-        accent: '#1a0a00',
-        accentText: ORANGE,
-        featured: false,
-    },
-    {
-        id: '03',
-        title: 'Halcyon Dashboard',
-        category: 'Interface',
-        tags: ['Data Viz', 'D3.js', 'Python'],
-        year: '2023',
-        desc: 'Real-time logistics intelligence dashboard processing satellite and ground-sensor data.',
-        accent: '#001a0a',
-        accentText: '#22c55e',
-        featured: true,
-    },
-    {
-        id: '04',
-        title: 'Void Brand Identity',
-        category: 'Identity',
-        tags: ['Branding', 'Motion', 'Print'],
-        year: '2023',
-        desc: 'Complete visual identity for a Jakarta-based fintech challenger brand.',
-        accent: '#0a001a',
-        accentText: '#a855f7',
-        featured: false,
-    },
-    {
-        id: '05',
-        title: 'Akar IoT Platform',
-        category: 'Platform',
-        tags: ['IoT', 'Firmware', 'Cloud'],
-        year: '2023',
-        desc: 'Industrial sensor mesh connecting 5,000+ edge devices to a centralized monitoring layer.',
-        accent: '#001a18',
-        accentText: '#06b6d4',
-        featured: false,
-    },
-    {
-        id: '06',
-        title: 'Fractal Commerce',
-        category: 'Platform',
-        tags: ['E-commerce', 'Headless', 'CMS'],
-        year: '2022',
-        desc: 'Headless commerce infrastructure for a multi-brand retail conglomerate across 6 countries.',
-        accent: '#1a1500',
-        accentText: '#eab308',
-        featured: false,
-    },
-];
-
-// ─────────────────────────────────────────────
-// UTILS
-// ─────────────────────────────────────────────
 const Reveal = ({
     children, delay = 0, y = 32, className = '',
 }: {
@@ -176,7 +105,7 @@ const CursorFollower = ({ visible, label }: { visible: boolean; label: string })
 const PreviewBubble = ({
     project, visible,
 }: {
-    project: typeof projects[0] | null;
+    project: ProjectItem | null;
     visible: boolean;
 }) => {
     const x = useMotionValue(-300);
@@ -251,7 +180,7 @@ const ProjectRow = ({
     onHover,
     onLeave,
 }: {
-    project: typeof projects[0];
+    project: ProjectItem;
     index: number;
     onHover: () => void;
     onLeave: () => void;
@@ -363,7 +292,7 @@ const ProjectRow = ({
 // ─────────────────────────────────────────────
 // FEATURED CARD (grid item)
 // ─────────────────────────────────────────────
-const FeaturedCard = ({ project, index }: { project: typeof projects[0]; index: number }) => {
+const FeaturedCard = ({ project, index }: { project: ProjectItem; index: number }) => {
     const ref = useRef<HTMLDivElement>(null);
     const inView = useInView(ref, { once: true, margin: '-40px 0px' });
     const [hovered, setHovered] = useState(false);
@@ -462,10 +391,15 @@ const FeaturedCard = ({ project, index }: { project: typeof projects[0]; index: 
 // ─────────────────────────────────────────────
 // MAIN PAGE
 // ─────────────────────────────────────────────
+const ORANGE = '#F26522';
+
 export function Projects() {
+    const { content } = useContent();
+    const projects = content.projects;
+    const CATEGORIES = useMemo(() => ['All', ...Array.from(new Set(projects.map(p => p.category)))], [projects]);
     const [activeFilter, setActiveFilter] = useState('All');
     const [cursorVisible, setCursorVisible] = useState(false);
-    const [hoveredProject, setHoveredProject] = useState<typeof projects[0] | null>(null);
+    const [hoveredProject, setHoveredProject] = useState<ProjectItem | null>(null);
     const [previewVisible, setPreviewVisible] = useState(false);
 
     const filteredProjects = activeFilter === 'All'
