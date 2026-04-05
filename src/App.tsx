@@ -1,55 +1,35 @@
-import { useEffect, useRef } from 'react';
-import Lenis from 'lenis';
-import { Header } from './components/Header';
-import { Hero } from './components/Hero';
-import { VideoReel } from './components/VideoReel';
-import { Services } from './components/Services';
-import { Vision } from './components/Vision';
-import { Footer } from './components/Footer';
-import { Preloader } from './components/Preloader';
-import { CustomCursor } from './components/CustomCursor';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
+import { Layout } from './components/Layout';
+import { Home } from './pages/Home';
+import { About } from './pages/About';
+import { Projects } from './pages/Projects';
+import { ServicesPage } from './pages/ServicesPage';
+import { Contact } from './pages/Contact';
+import { PrivacyPolicy } from './pages/PrivacyPolicy';
+import { TermsOfUse } from './pages/TermsOfUse';
+import { Licenses } from './pages/Licenses';
+import { NotFound } from './pages/NotFound';
 
 function App() {
-  const lenisRef = useRef<Lenis | null>(null);
-
-  useEffect(() => {
-    const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      orientation: 'vertical',
-      gestureOrientation: 'vertical',
-      smoothWheel: true,
-      wheelMultiplier: 1,
-      touchMultiplier: 2,
-    });
-
-    lenisRef.current = lenis;
-
-    function raf(time: number) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
-
-    requestAnimationFrame(raf);
-
-    return () => lenis.destroy();
-  }, []);
-
   return (
-    <>
-      <Preloader />
-      <CustomCursor />
-      <div className="min-h-screen text-stark-white w-full overflow-x-clip relative selection:bg-tech-orange selection:text-white bg-[#090909]">
-        <Header />
-        <main id="main">
-          <Hero />
-          <VideoReel />
-          <Services />
-          <Vision />
-        </main>
-        <Footer />
-      </div>
-    </>
+    <HelmetProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Home />} />
+            <Route path="about" element={<About />} />
+            <Route path="projects" element={<Projects />} />
+            <Route path="services" element={<ServicesPage />} />
+            <Route path="contact" element={<Contact />} />
+            <Route path="privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="terms-of-use" element={<TermsOfUse />} />
+            <Route path="licenses" element={<Licenses />} />
+            <Route path="*" element={<NotFound />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </HelmetProvider>
   );
 }
 

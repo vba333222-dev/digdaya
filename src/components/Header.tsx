@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { motion, useMotionValueEvent, useScroll, AnimatePresence } from 'framer-motion';
+import { motion, useMotionValueEvent, useScroll } from 'framer-motion';
+import { Link, useLocation } from 'react-router-dom';
 import { NavigationMenu } from './NavigationMenu';
 
 /**
@@ -30,6 +31,7 @@ const LogoIcon = ({ className = '' }: { className?: string }) => (
 
 export const Header = () => {
     const [menuOpen, setMenuOpen] = useState(false);
+    const location = useLocation();
     const [hidden, setHidden] = useState(false);
     const [scrolled, setScrolled] = useState(false);
     const lastScrollY = useRef(0);
@@ -68,10 +70,10 @@ export const Header = () => {
                 style={{ mixBlendMode: (scrolled || menuOpen) ? 'normal' : 'difference' }}
             >
                 {/* Brand Logo */}
-                <a
-                    href="/"
+                <Link
+                    to="/"
                     aria-label="Digdaya Teknokraf — Home"
-                    className="flex items-center gap-2 pointer-events-auto cursor-none group no-underline text-white"
+                    className="flex items-center gap-2 pointer-events-auto group no-underline text-white"
                 >
                     {/* Icon — height matches "digdaya" text height */}
                     <LogoIcon className="h-[1.4rem] md:h-[1.8rem] w-auto flex-shrink-0" />
@@ -89,21 +91,41 @@ export const Header = () => {
                             {'TEKNOKRAF'.split('').map((c, i) => (
                                 <span
                                     key={i}
-                                    className="text-[0.39rem] md:text-[0.5rem] font-semibold text-[#ea6001] font-montserrat uppercase"
+                                    className="text-[0.39rem] md:text-[0.5rem] font-semibold text-[var(--brand)] font-montserrat uppercase"
                                 >
                                     {c}
                                 </span>
                             ))}
                         </div>
                     </div>
-                </a>
+                </Link>
 
-                {/* Right side nav items */}
+                {/* Desktop Inline Nav */}
+                <nav className="hidden lg:flex items-center gap-8 pointer-events-auto">
+                    {[
+                        { label: 'About', to: '/about' },
+                        { label: 'Projects', to: '/projects' },
+                        { label: 'Services', to: '/services' },
+                        { label: 'Contact', to: '/contact' },
+                    ].map(link => (
+                        <Link
+                            key={link.label}
+                            to={link.to}
+                            className={`text-[var(--label-sm)] font-mono tracking-[0.2em] uppercase transition-colors duration-300 ${location.pathname === link.to
+                                ? 'text-[var(--brand)]'
+                                : 'text-white/40 hover:text-white'
+                                }`}
+                        >
+                            {link.label}
+                        </Link>
+                    ))}
+                </nav>
+
                 {/* Right side nav items */}
                 <div className="flex items-center pointer-events-auto">
                     <button
                         onClick={() => setMenuOpen(!menuOpen)}
-                        className="relative w-12 h-12 flex flex-col items-end justify-center gap-[6px] text-white transition-colors duration-300 cursor-none group"
+                        className="relative w-12 h-12 flex flex-col items-end justify-center gap-[6px] text-white transition-colors duration-300 group"
                         aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'}
                     >
                         <motion.span

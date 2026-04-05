@@ -9,6 +9,7 @@ const servicesList = [
         items: ['Semiconductor', 'Computer Assembly', 'Special Machinery', 'Measuring Instruments'],
         accent: '#F26522',
         description: 'Building the physical backbone of modern technology infrastructure.',
+        imageId: 'r9oezyka89xjs8gnnnoc'
     },
     {
         num: '02',
@@ -16,6 +17,7 @@ const servicesList = [
         items: ['Wireless & Satellite', 'IoT Consulting'],
         accent: '#FFFFFF',
         description: 'Bridging the gap between devices, networks and people.',
+        imageId: 'uhhynxanvd8avfeeajj3'
     },
     {
         num: '03',
@@ -23,6 +25,7 @@ const servicesList = [
         items: ['InfoSec Consulting', 'Digital Identity', 'Electronic Certificates'],
         accent: '#F26522',
         description: 'Fortifying digital ecosystems with unbreakable trust layers.',
+        imageId: 'hloc1zsblucjgfchd0e9'
     },
     {
         num: '04',
@@ -30,6 +33,7 @@ const servicesList = [
         items: ['Blockchain', 'Immersive Media (VR/AR)', 'Data Processing', 'Hosting', 'Web Portals'],
         accent: '#FFFFFF',
         description: 'Crafting intelligent systems that power the next generation.',
+        imageId: 'f0hps0zc22jtls7c9mz5'
     },
     {
         num: '05',
@@ -37,6 +41,7 @@ const servicesList = [
         items: ['Engineering Consulting', 'Multimedia Services', 'Advertising'],
         accent: '#F26522',
         description: 'Where strategic vision meets creative execution.',
+        imageId: 'hlj4trbjlz53ivtgyuvs'
     },
 ];
 
@@ -62,13 +67,33 @@ const CompetencyItem = ({
     scrollYProgress: MotionValue<number>;
 }) => {
     const itemStart = start + (0.2 + index * 0.06) * segment;
-    const itemY = useTransform(scrollYProgress, [itemStart, center, end], [50, 0, 0]);
-    const itemX = useTransform(scrollYProgress, [itemStart, center, end], [40, 0, -30]);
-    const itemOpacity = useTransform(scrollYProgress, [itemStart, center, end], [0, 1, 0.5]);
+
+    const getSafeTransform = (inputs: number[], outputs: number[]) => {
+        const safeIn: number[] = [];
+        const safeOut: number[] = [];
+        for (let i = 0; i < inputs.length; i++) {
+            if (inputs[i] >= 0 && inputs[i] <= 1) {
+                safeIn.push(inputs[i]);
+                safeOut.push(outputs[i]);
+            }
+        }
+        if (safeIn.length === 1) {
+            if (safeIn[0] < 0.5) safeIn.push(1), safeOut.push(safeOut[0]);
+            else safeIn.unshift(0), safeOut.unshift(safeOut[0]);
+        } else if (safeIn.length === 0) {
+            safeIn.push(0, 1);
+            safeOut.push(outputs[1], outputs[1]);
+        }
+        return useTransform(scrollYProgress, safeIn, safeOut);
+    };
+
+    const itemY = getSafeTransform([itemStart, center, end], [50, 0, 0]);
+    const itemX = getSafeTransform([itemStart, center, end], [40, 0, -30]);
+    const itemOpacity = getSafeTransform([itemStart, center, end], [0, 1, 0.5]);
 
     return (
         <motion.li
-            className="group flex items-center gap-4 py-4 cursor-pointer"
+            className="group flex items-center gap-4 py-3 md:py-4 cursor-pointer relative overflow-hidden"
             style={{
                 borderBottom: '1px solid rgba(255,255,255,0.04)',
                 willChange: 'transform, opacity',
@@ -78,12 +103,12 @@ const CompetencyItem = ({
             }}
         >
             <span
-                className="text-[0.6rem] font-mono transition-all duration-300 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0"
+                className="text-[var(--label-sm)] font-mono transition-all duration-300 opacity-0 -translate-x-3 group-hover:opacity-100 group-hover:translate-x-0"
                 style={{ color: accent }}
             >
                 →
             </span>
-            <span className="text-sm md:text-[0.95rem] font-medium tracking-wide text-white/40 group-hover:text-white transition-colors duration-300">
+            <span className="text-[0.85rem] md:text-[0.95rem] font-medium tracking-wide text-white/40 group-hover:text-white transition-all duration-300 transform group-hover:translate-x-1">
                 {item}
             </span>
         </motion.li>
@@ -114,36 +139,55 @@ const ServiceCard = ({
     const end = (index + 1) * segment;
 
     // --- Transforms mapped from scrollYProgress ---
+    // Safely clamp the ranges so WAAPI doesn't crash on offsets outside [0, 1]
+    const getSafeTransform = (inputs: number[], outputs: number[]) => {
+        const safeIn: number[] = [];
+        const safeOut: number[] = [];
+        for (let i = 0; i < inputs.length; i++) {
+            if (inputs[i] >= 0 && inputs[i] <= 1) {
+                safeIn.push(inputs[i]);
+                safeOut.push(outputs[i]);
+            }
+        }
+        if (safeIn.length === 1) {
+            if (safeIn[0] < 0.5) safeIn.push(1), safeOut.push(safeOut[0]);
+            else safeIn.unshift(0), safeOut.unshift(safeOut[0]);
+        } else if (safeIn.length === 0) {
+            safeIn.push(0, 1);
+            safeOut.push(outputs[1], outputs[1]);
+        }
+        return useTransform(scrollYProgress, safeIn, safeOut);
+    };
 
     // Title: dramatic slide up with 3D tilt
-    const titleY = useTransform(scrollYProgress, [start, center, end], [120, 0, 0]);
-    const titleScale = useTransform(scrollYProgress, [start, center, end], [0.8, 1, 1]);
-    const titleRotateX = useTransform(scrollYProgress, [start, center, end], [25, 0, 0]);
-    const titleX = useTransform(scrollYProgress, [start, center, end], [0, 0, -150]);
-    const titleOpacity = useTransform(scrollYProgress, [start, center, end], [0, 1, 0.4]);
+    const titleY = getSafeTransform([start, center, end], [120, 0, 0]);
+    const titleScale = getSafeTransform([start, center, end], [0.8, 1, 1]);
+    const titleRotateX = getSafeTransform([start, center, end], [25, 0, 0]);
+    const titleX = getSafeTransform([start, center, end], [0, 0, -150]);
+    const titleOpacity = getSafeTransform([start, center, end], [0, 1, 0.4]);
 
     // Description: slide in from left (starts later)
     const descStart = start + 0.2 * segment;
-    const descY = useTransform(scrollYProgress, [descStart, center, end], [60, 0, 0]);
-    const descX = useTransform(scrollYProgress, [descStart, center, end], [-30, 0, -80]);
-    const descOpacity = useTransform(scrollYProgress, [descStart, center, end], [0, 1, 0.3]);
+    const descY = getSafeTransform([descStart, center, end], [60, 0, 0]);
+    const descX = getSafeTransform([descStart, center, end], [-30, 0, -80]);
+    const descOpacity = getSafeTransform([descStart, center, end], [0, 1, 0.3]);
 
     // Background number: scale + rotate in (starts earlier)
     const numStart = start + 0.1 * segment;
-    const numScale = useTransform(scrollYProgress, [numStart, center, end], [0.5, 1, 1]);
-    const numOpacity = useTransform(scrollYProgress, [numStart, center, end], [0, 1, 0.5]);
-    const numRotate = useTransform(scrollYProgress, [numStart, center, end], [-15, 0, 10]);
+    const numScale = getSafeTransform([numStart, center, end], [0.5, 1, 1]);
+    const numOpacity = getSafeTransform([numStart, center, end], [0, 1, 0.5]);
+    const numRotate = getSafeTransform([numStart, center, end], [-15, 0, 10]);
 
     // Vertical divider: grow from top
     const divStart = start + 0.15 * segment;
-    const dividerScaleY = useTransform(scrollYProgress, [divStart, center, end], [0, 1, 1]);
+    const dividerScaleY = getSafeTransform([divStart, center, end], [0, 1, 1]);
 
     // Progress bar fill (local to the card)
-    const barScaleX = useTransform(scrollYProgress, [start, center, end], [0, 1, 1]);
+    const barScaleX = getSafeTransform([start, center, end], [0, 1, 1]);
 
     // Competencies label
-    const labelOpacity = useTransform(scrollYProgress, [divStart, center, end], [0, 1, 1]);
-    const labelX = useTransform(scrollYProgress, [divStart, center, end], [20, 0, 0]);
+    const labelOpacity = getSafeTransform([divStart, center, end], [0, 1, 1]);
+    const labelX = getSafeTransform([divStart, center, end], [20, 0, 0]);
 
     return (
         <div
@@ -185,20 +229,20 @@ const ServiceCard = ({
             </motion.div>
 
             {/* Top bar */}
-            <div className="w-full px-8 md:px-16 py-6 flex items-center justify-between relative">
+            <div className="w-full px-8 md:px-16 py-6 flex items-center justify-between relative z-10">
                 <div className="flex items-center gap-6">
                     <span
-                        className="text-[1.1rem] font-mono font-bold tracking-wider"
+                        className="text-[1.1rem] md:text-[1.1rem] font-mono font-bold tracking-wider"
                         style={{ color: service.accent }}
                     >
                         {service.num}
                     </span>
                     <div className="h-[1px] w-12 bg-white/10" />
-                    <span className="text-[0.65rem] font-bold tracking-[0.25em] text-white/30 uppercase">
+                    <span className="text-[var(--label-sm)] font-bold tracking-[0.3em] text-white/30 uppercase">
                         Service Category
                     </span>
                 </div>
-                <span className="text-[0.65rem] font-mono text-white/20 tracking-wider">
+                <span className="text-[var(--label-sm)] font-mono text-white/30 tracking-widest">
                     {service.num}/{String(total).padStart(2, '0')}
                 </span>
                 <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-white/5" />
@@ -207,9 +251,24 @@ const ServiceCard = ({
             {/* Main content area */}
             <div className="flex-1 w-full grid grid-cols-1 md:grid-cols-12 relative">
                 {/* Left: Title area */}
-                <div className="md:col-span-7 flex flex-col justify-center px-8 md:px-16 py-12" style={{ perspective: '800px' }}>
+                <div className="md:col-span-7 flex flex-col justify-center px-8 md:px-16 py-12 relative overflow-hidden" style={{ perspective: '800px' }}>
+                    {/* Background Image scoped strictly to Title Area */}
+                    {service.imageId && (
+                        <div className="absolute inset-0 z-0 pointer-events-none bg-[#050505]/50">
+                            <img
+                                src={`https://res.cloudinary.com/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'dprsmfj1i'}/image/upload/f_auto,q_auto,w_1000/${service.imageId}`}
+                                alt=""
+                                className="w-full h-full object-cover opacity-70"
+                            />
+                            {/* Smooth gradient fading into the solid brutalist dark background on the right */}
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-[#0A0A0A]" />
+                            {/* Dark gradient for text contrast at the bottom/top */}
+                            <div className="absolute inset-0 bg-gradient-to-b from-[#0A0A0A]/50 via-transparent to-[#0A0A0A]/80" />
+                        </div>
+                    )}
+
                     <motion.h2
-                        className="text-[14vw] md:text-[7vw] font-black leading-[0.82] tracking-tight uppercase whitespace-pre-line m-0"
+                        className="relative z-10 text-[12vw] md:text-[6.5vw] font-black leading-[0.82] tracking-tight uppercase whitespace-pre-line m-0 drop-shadow-[0_12px_24px_rgba(0,0,0,1)] mix-blend-normal"
                         style={{
                             fontFamily: 'var(--font-nero)',
                             color: isOrange ? '#F26522' : '#FFFFFF',
@@ -226,9 +285,9 @@ const ServiceCard = ({
                     </motion.h2>
 
                     <motion.p
-                        className="text-sm md:text-base font-light leading-relaxed mt-8 max-w-[480px]"
+                        className="relative z-10 text-sm md:text-base font-medium leading-relaxed mt-8 max-w-[480px] drop-shadow-[0_4px_10px_rgba(0,0,0,1)]"
                         style={{
-                            color: 'rgba(255,255,255,0.35)',
+                            color: 'rgba(255,255,255,0.7)',
                             fontFamily: 'var(--font-body)',
                             willChange: 'transform, opacity',
                             y: descY,
@@ -251,7 +310,7 @@ const ServiceCard = ({
                 {/* Right: Competencies */}
                 <div className="md:col-span-4 flex flex-col justify-center px-8 md:px-4 py-12">
                     <motion.span
-                        className="comp-label text-[0.6rem] font-bold tracking-[0.3em] uppercase mb-8"
+                        className="comp-label text-[var(--label-sm)] font-bold tracking-[0.3em] uppercase mb-8"
                         style={{
                             color: service.accent,
                             opacity: labelOpacity,
@@ -307,6 +366,15 @@ export const Services = () => {
         offset: ["start start", "end end"]
     });
 
+    const { scrollYProgress: sectionProgress } = useScroll({
+        target: sectionRef,
+        offset: ["start end", "end start"]
+    });
+
+    // Cinematic section transition
+    const sectionOpacity = useTransform(sectionProgress, [0, 0.08, 0.92, 1], [0, 1, 1, 0]);
+    const sectionScale = useTransform(sectionProgress, [0, 0.08, 0.92, 1], [0.85, 1, 1, 0.95]);
+
     const totalCards = servicesList.length;
 
     // Directly derive horizontal translation from scroll position
@@ -325,13 +393,16 @@ export const Services = () => {
         <section
             ref={sectionRef}
             id="services"
-            style={{ height: `${totalCards * 100}vh` }}
+            style={{ height: `${(totalCards - 1) * 100}vh` }}
             className="relative"
         >
-            <div className="sticky top-0 h-screen w-full overflow-hidden">
+            <motion.div
+                className="sticky top-0 h-screen w-full overflow-hidden transform-gpu"
+                style={{ opacity: sectionOpacity, scale: sectionScale }}
+            >
                 {/* Section label */}
                 <div className="absolute top-6 left-8 md:left-16 z-20 flex items-center gap-4">
-                    <span className="text-[0.6rem] font-bold tracking-[0.3em] text-white/20 uppercase">
+                    <span className="text-[var(--label-sm)] font-bold tracking-[0.3em] text-white/20 uppercase">
                         Services
                     </span>
                     <div className="h-[1px] w-8 bg-white/10" />
@@ -358,7 +429,7 @@ export const Services = () => {
                         />
                     ))}
                 </motion.div>
-            </div>
+            </motion.div>
         </section>
     );
 };
