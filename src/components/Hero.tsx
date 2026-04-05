@@ -1,4 +1,4 @@
-import { useRef, useMemo, useEffect } from 'react';
+import { useRef, useMemo, useEffect, useState } from 'react';
 import { motion, useScroll, useTransform, useInView } from 'framer-motion';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
@@ -247,6 +247,7 @@ const AdvancedSatellite = () => {
     const { gl, clock } = useThree();
     const canvasEl = useRef(gl.domElement);
     const inView = useInView(canvasEl);
+    const [hovered, setHovered] = useState(false);
 
     // ── Materials ── CYAN COLOR SCHEME ─────────
     // Primary wireframe — bright cyan, crisp
@@ -342,7 +343,10 @@ const AdvancedSatellite = () => {
     // ── Animation ──────────────────────────────
     useFrame((state, delta) => {
         if (!groupRef.current || !inView) return;
+
         const t = clock.getElapsedTime();
+
+        // 1. Logika Rotasi
         const tx = (state.pointer.y * Math.PI) / 8;
         const ty = (state.pointer.x * Math.PI) / 8;
         groupRef.current.rotation.x = THREE.MathUtils.lerp(
@@ -351,6 +355,21 @@ const AdvancedSatellite = () => {
         groupRef.current.rotation.y = THREE.MathUtils.lerp(
             groupRef.current.rotation.y, ty + t * 0.065, 0.035
         );
+
+        // 2. Logika Hover: Transisi warna material wireframe secara halus
+        const targetColor = new THREE.Color(hovered ? '#F26522' : '#00e5ff');
+        wBright.color.lerp(targetColor, 0.1);
+        wMid.color.lerp(targetColor, 0.1);
+
+        // 3. Logika Pulse: Lampu indikator (cepat) dan aliran energi panel (lambat)
+        const beaconPulse = 0.3 + Math.abs(Math.sin(t * 3)) * 0.7;
+        const energyPulse = 0.6 + Math.sin(t * 1.5) * 0.4;
+
+        // 4. Terapkan opacity ke material untuk efek glow
+        dotCyan.opacity = beaconPulse;
+        dotOrange.opacity = beaconPulse;
+        wSolar.opacity = energyPulse;
+        glowMat.opacity = 0.02 + (energyPulse * 0.03);
     });
 
     // ── Solar Panel component (100% wireframe) ──
@@ -391,7 +410,20 @@ const AdvancedSatellite = () => {
     );
 
     return (
-        <group ref={groupRef} rotation={[0.18, 0.5, 0.1]} scale={1.15} position={[-0.35, 0, 0]}>
+        <group
+            ref={groupRef}
+            rotation={[0.18, 0.5, 0.1]}
+            scale={1.15}
+            position={[-0.35, 0, 0]}
+            onPointerOver={(e) => {
+                e.stopPropagation();
+                setHovered(true);
+            }}
+            onPointerOut={(e) => {
+                e.stopPropagation();
+                setHovered(false);
+            }}
+        >
 
             {/* ══════════════════════════════════════
                 MAIN BODY — cylindrical pressure vessel
@@ -799,6 +831,7 @@ export const Hero = () => {
         target: containerRef,
         offset: ['start start', 'end start'],
     });
+    const isInView = useInView(containerRef);
 
     const textY = useTransform(scrollYProgress, [0, 1], ['0%', '60%']);
     const textOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);

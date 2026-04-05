@@ -68,8 +68,9 @@ export const CustomCursor = () => {
     const cursorX = useSpring(mouseX, springConfig);
     const cursorY = useSpring(mouseY, springConfig);
 
+    const isTouchDevice = typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
+
     useEffect(() => {
-        const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
         if (isTouchDevice) return;
 
         const moveCursor = (e: MouseEvent) => {
@@ -79,9 +80,9 @@ export const CustomCursor = () => {
 
         window.addEventListener('mousemove', moveCursor);
         return () => window.removeEventListener('mousemove', moveCursor);
-    }, [mouseX, mouseY]);
+    }, [mouseX, mouseY, isTouchDevice]);
 
-    if (typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches) {
+    if (isTouchDevice) {
         return null;
     }
 

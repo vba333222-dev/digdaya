@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { motion, useScroll, useTransform, useMotionValueEvent, MotionValue } from 'framer-motion';
+import { motion, useScroll, useTransform, useMotionValueEvent } from 'framer-motion';
 import { NoiseTexture } from './NoiseTexture';
 
 const servicesList = [
@@ -49,58 +49,22 @@ const clamp = (v: number, min: number, max: number) => Math.max(min, Math.min(ma
 
 const CompetencyItem = ({
     item,
-    index,
-    start,
-    center,
-    end,
-    segment,
     accent,
-    scrollYProgress
 }: {
     item: string;
-    index: number;
-    start: number;
-    center: number;
-    end: number;
-    segment: number;
     accent: string;
-    scrollYProgress: MotionValue<number>;
 }) => {
-    const itemStart = start + (0.2 + index * 0.06) * segment;
-
-    const getSafeTransform = (inputs: number[], outputs: number[]) => {
-        const safeIn: number[] = [];
-        const safeOut: number[] = [];
-        for (let i = 0; i < inputs.length; i++) {
-            if (inputs[i] >= 0 && inputs[i] <= 1) {
-                safeIn.push(inputs[i]);
-                safeOut.push(outputs[i]);
-            }
-        }
-        if (safeIn.length === 1) {
-            if (safeIn[0] < 0.5) safeIn.push(1), safeOut.push(safeOut[0]);
-            else safeIn.unshift(0), safeOut.unshift(safeOut[0]);
-        } else if (safeIn.length === 0) {
-            safeIn.push(0, 1);
-            safeOut.push(outputs[1], outputs[1]);
-        }
-        return useTransform(scrollYProgress, safeIn, safeOut);
-    };
-
-    const itemY = getSafeTransform([itemStart, center, end], [50, 0, 0]);
-    const itemX = getSafeTransform([itemStart, center, end], [40, 0, -30]);
-    const itemOpacity = getSafeTransform([itemStart, center, end], [0, 1, 0.5]);
-
     return (
         <motion.li
             className="group flex items-center gap-4 py-3 md:py-4 cursor-pointer relative overflow-hidden"
             style={{
                 borderBottom: '1px solid rgba(255,255,255,0.04)',
                 willChange: 'transform, opacity',
-                y: itemY,
-                x: itemX,
-                opacity: itemOpacity,
             }}
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, amount: 0.1 }}
+            transition={{ duration: 0.6, ease: 'easeOut' }}
         >
             <span
                 className="text-[var(--label-sm)] font-mono transition-all duration-300 opacity-0 -translate-x-3 group-hover:opacity-100 group-hover:translate-x-0"
@@ -116,84 +80,20 @@ const CompetencyItem = ({
 };
 
 
-// --- Service Card with aggressive scroll animations powered by Framer Motion ---
+// --- Service Card with whileInView scroll animations powered natively by Framer Motion ---
 const ServiceCard = ({
     service,
-    index,
     total,
-    scrollYProgress,
 }: {
     service: (typeof servicesList)[0];
-    index: number;
     total: number;
-    scrollYProgress: MotionValue<number>;
 }) => {
     const isOrange = service.accent === '#F26522';
 
-    // Each card occupies a segment of the total progress
-    const segment = 1 / (total - 1);
-
-    // The exact scroll points where this card enters, centers, and exits the viewport
-    const start = (index - 1) * segment;
-    const center = index * segment;
-    const end = (index + 1) * segment;
-
-    // --- Transforms mapped from scrollYProgress ---
-    // Safely clamp the ranges so WAAPI doesn't crash on offsets outside [0, 1]
-    const getSafeTransform = (inputs: number[], outputs: number[]) => {
-        const safeIn: number[] = [];
-        const safeOut: number[] = [];
-        for (let i = 0; i < inputs.length; i++) {
-            if (inputs[i] >= 0 && inputs[i] <= 1) {
-                safeIn.push(inputs[i]);
-                safeOut.push(outputs[i]);
-            }
-        }
-        if (safeIn.length === 1) {
-            if (safeIn[0] < 0.5) safeIn.push(1), safeOut.push(safeOut[0]);
-            else safeIn.unshift(0), safeOut.unshift(safeOut[0]);
-        } else if (safeIn.length === 0) {
-            safeIn.push(0, 1);
-            safeOut.push(outputs[1], outputs[1]);
-        }
-        return useTransform(scrollYProgress, safeIn, safeOut);
-    };
-
-    // Title: dramatic slide up with 3D tilt
-    const titleY = getSafeTransform([start, center, end], [120, 0, 0]);
-    const titleScale = getSafeTransform([start, center, end], [0.8, 1, 1]);
-    const titleRotateX = getSafeTransform([start, center, end], [25, 0, 0]);
-    const titleX = getSafeTransform([start, center, end], [0, 0, -150]);
-    const titleOpacity = getSafeTransform([start, center, end], [0, 1, 0.4]);
-
-    // Description: slide in from left (starts later)
-    const descStart = start + 0.2 * segment;
-    const descY = getSafeTransform([descStart, center, end], [60, 0, 0]);
-    const descX = getSafeTransform([descStart, center, end], [-30, 0, -80]);
-    const descOpacity = getSafeTransform([descStart, center, end], [0, 1, 0.3]);
-
-    // Background number: scale + rotate in (starts earlier)
-    const numStart = start + 0.1 * segment;
-    const numScale = getSafeTransform([numStart, center, end], [0.5, 1, 1]);
-    const numOpacity = getSafeTransform([numStart, center, end], [0, 1, 0.5]);
-    const numRotate = getSafeTransform([numStart, center, end], [-15, 0, 10]);
-
-    // Vertical divider: grow from top
-    const divStart = start + 0.15 * segment;
-    const dividerScaleY = getSafeTransform([divStart, center, end], [0, 1, 1]);
-
-    // Progress bar fill (local to the card)
-    const barScaleX = getSafeTransform([start, center, end], [0, 1, 1]);
-
-    // Competencies label
-    const labelOpacity = getSafeTransform([divStart, center, end], [0, 1, 1]);
-    const labelX = getSafeTransform([divStart, center, end], [20, 0, 0]);
-
     return (
         <div
-            className="h-full flex flex-col relative"
+            className="h-full flex flex-col relative shrink-0"
             style={{
-                minWidth: '100vw',
                 width: '100vw',
                 background: isOrange ? '#0A0A0A' : '#0F0F0F',
                 perspective: '1200px',
@@ -220,10 +120,11 @@ const ServiceCard = ({
                     color: 'transparent',
                     WebkitTextStroke: `1px ${isOrange ? 'rgba(242,101,34,0.06)' : 'rgba(255,255,255,0.03)'}`,
                     transformOrigin: 'center center',
-                    scale: numScale,
-                    opacity: numOpacity,
-                    rotate: numRotate,
                 }}
+                initial={{ opacity: 0, scale: 0.6, rotate: -20, y: '-50%' }}
+                whileInView={{ opacity: 1, scale: 1, rotate: 0, y: '-50%' }}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{ duration: 1, ease: 'easeOut' }}
             >
                 {service.num}
             </motion.div>
@@ -274,12 +175,11 @@ const ServiceCard = ({
                             color: isOrange ? '#F26522' : '#FFFFFF',
                             transformOrigin: 'left center',
                             willChange: 'transform, opacity',
-                            y: titleY,
-                            scale: titleScale,
-                            rotateX: titleRotateX,
-                            x: titleX,
-                            opacity: titleOpacity,
                         }}
+                        initial={{ opacity: 0, scale: 0.8, rotateX: 25, y: 150 }}
+                        whileInView={{ opacity: 1, scale: 1, rotateX: 0, y: 0 }}
+                        viewport={{ once: true, amount: 0.3 }}
+                        transition={{ duration: 0.8, ease: 'easeOut' }}
                     >
                         {service.title}
                     </motion.h2>
@@ -290,10 +190,11 @@ const ServiceCard = ({
                             color: 'rgba(255,255,255,0.7)',
                             fontFamily: 'var(--font-body)',
                             willChange: 'transform, opacity',
-                            y: descY,
-                            x: descX,
-                            opacity: descOpacity,
                         }}
+                        initial={{ opacity: 0, x: -30, y: 40 }}
+                        whileInView={{ opacity: 1, x: 0, y: 0 }}
+                        viewport={{ once: true, amount: 0.4 }}
+                        transition={{ duration: 0.8, ease: 'easeOut', delay: 0.1 }}
                     >
                         {service.description}
                     </motion.p>
@@ -303,7 +204,10 @@ const ServiceCard = ({
                 <div className="hidden md:block md:col-span-1 relative">
                     <motion.div
                         className="absolute left-1/2 top-8 bottom-8 w-[1px] bg-white/5 origin-top"
-                        style={{ scaleY: dividerScaleY }}
+                        initial={{ scaleY: 0 }}
+                        whileInView={{ scaleY: 1 }}
+                        viewport={{ once: true, amount: 0.2 }}
+                        transition={{ duration: 0.8, ease: 'easeInOut' }}
                     />
                 </div>
 
@@ -311,11 +215,11 @@ const ServiceCard = ({
                 <div className="md:col-span-4 flex flex-col justify-center px-8 md:px-4 py-12">
                     <motion.span
                         className="comp-label text-[var(--label-sm)] font-bold tracking-[0.3em] uppercase mb-8"
-                        style={{
-                            color: service.accent,
-                            opacity: labelOpacity,
-                            x: labelX
-                        }}
+                        style={{ color: service.accent }}
+                        initial={{ opacity: 0, x: 20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true, amount: 0.3 }}
+                        transition={{ duration: 0.6, ease: 'easeOut' }}
                     >
                         Core Competencies
                     </motion.span>
@@ -325,13 +229,7 @@ const ServiceCard = ({
                             <CompetencyItem
                                 key={i}
                                 item={item}
-                                index={i}
-                                start={start}
-                                center={center}
-                                end={end}
-                                segment={segment}
                                 accent={service.accent}
-                                scrollYProgress={scrollYProgress}
                             />
                         ))}
                     </ul>
@@ -348,8 +246,11 @@ const ServiceCard = ({
                             background: isOrange
                                 ? 'linear-gradient(90deg, rgba(242,101,34,0) 0%, #F26522 100%)'
                                 : 'linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.5) 100%)',
-                            scaleX: barScaleX,
                         }}
+                        initial={{ scaleX: 0 }}
+                        whileInView={{ scaleX: 1 }}
+                        viewport={{ once: true, amount: 0.4 }}
+                        transition={{ duration: 0.8, ease: 'easeInOut' }}
                     />
                 </div>
             </div>
@@ -377,9 +278,9 @@ export const Services = () => {
 
     const totalCards = servicesList.length;
 
-    // Directly derive horizontal translation from scroll position
-    const totalVw = (totalCards - 1) * 100;
-    const x = useTransform(scrollYProgress, [0, 1], ["0vw", `-${totalVw}vw`]);
+    // Based on user instruction: exactly 0% to -80% works perfectly for 5 cards,
+    // where -80% places the last (5th) 100vw card right at the left edge of the viewport.
+    const x = useTransform(scrollYProgress, [0, 1], ["0%", "-80%"]);
 
     // Update pagination text directly to DOM to avoid React re-renders during high-frequency scroll events
     useMotionValueEvent(scrollYProgress, "change", (latest) => {
@@ -415,6 +316,7 @@ export const Services = () => {
                 <motion.div
                     style={{
                         x,
+                        width: `${totalCards * 100}vw`,
                         willChange: 'transform',
                     }}
                     className="flex h-full"
@@ -423,9 +325,7 @@ export const Services = () => {
                         <ServiceCard
                             key={index}
                             service={service}
-                            index={index}
                             total={totalCards}
-                            scrollYProgress={scrollYProgress}
                         />
                     ))}
                 </motion.div>

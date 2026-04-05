@@ -42,9 +42,8 @@
     font-family: var(--font-body);
   }
 
-  /* Hide OS cursor on desktop — custom branded cursor replaces it.
-     Touch devices (pointer: coarse) and small screens keep native cursor. */
-  @media (pointer: fine) and (min-width: 768px) {
+  /* Hide OS cursor on devices with fine pointer, keep default on mobile. */
+  @media (pointer: fine) {
     * {
       cursor: none !important;
     }
