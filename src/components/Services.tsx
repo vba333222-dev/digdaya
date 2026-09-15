@@ -265,16 +265,6 @@ export const Services = () => {
                 className="sticky top-0 h-screen w-full overflow-hidden transform-gpu"
                 style={{ opacity: sectionOpacity, scale: sectionScale }}
             >
-                {/* Section label */}
-                <div className="absolute top-6 left-8 md:left-16 z-20 flex items-center gap-4">
-                    <span className="text-[var(--label-sm)] font-bold tracking-[0.3em] text-white/20 uppercase">
-                        Services
-                    </span>
-                    <div className="h-[1px] w-8 bg-white/10" />
-                    <span className="text-[0.6rem] font-mono text-white/20">
-                        <span ref={progressTextRef}>01</span>/{String(totalCards).padStart(2, '0')}
-                    </span>
-                </div>
 
                 {/* Horizontal slide track driven strictly by Framer Motion container */}
                 <motion.div

@@ -2,6 +2,7 @@ import { useRef, useMemo, useEffect } from 'react';
 import { motion, useScroll, useTransform, useInView } from 'framer-motion';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
+import { ErrorBoundary } from './ErrorBoundary';
 
 // ─────────────────────────────────────────────
 // ADVANCED REALISTIC SATELLITE — ISS-inspired wireframe
@@ -244,50 +245,104 @@ const makeConeWireframe = (r: number, h: number, segs: number): THREE.BufferGeom
 // ─────────────────────────────────────────────
 const AdvancedSatellite = () => {
     const groupRef = useRef<THREE.Group>(null);
-    const { gl, clock } = useThree();
+    const { gl, camera, scene } = useThree();
     const canvasEl = useRef(gl.domElement);
     const inView = useInView(canvasEl);
-    const hovered = useRef(false);
 
-    // ── Materials ── CYAN COLOR SCHEME ─────────
-    // Primary wireframe — bright cyan, crisp
+    // ── Tech-themed Color Palette ─────────────────
+    // Orange accent for blockchain elements
+    const orangeAccent = useMemo(() => new THREE.Color('#F26522'), []);
+    // Teal accent for semiconductor elements
+    const tealAccent = useMemo(() => new THREE.Color('#00E5FF'), []);
+    // Deep blue for AI/software ecosystem
+    const blueAccent = useMemo(() => new THREE.Color('#0066FF'), []);
+    // Dark tech background
+    const darkTech = useMemo(() => new THREE.Color('#050510'), []);
+
+    // ── Materials ── Enhanced with Shader-like Effects ─────────
+    // Primary bright wireframe — cyan for main structure
     const wBright = useMemo(() => new THREE.LineBasicMaterial({
-        color: '#00e5ff', opacity: 1.0, transparent: true,
+        color: tealAccent.getHex(), opacity: 1.0, transparent: true,
     }), []);
-    // Secondary wireframe — medium cyan for depth
+    // Secondary wireframe — slightly dimmed cyan for depth
     const wMid = useMemo(() => new THREE.LineBasicMaterial({
-        color: '#00bcd4', opacity: 0.85, transparent: true,
+        color: tealAccent.clone().lerp(darkTech, 0.3).getHex(), opacity: 0.85, transparent: true,
     }), []);
-    // Tertiary — dim cyan detail elements
+    // Tertiary dim cyan detail elements
     const wDim = useMemo(() => new THREE.LineBasicMaterial({
-        color: '#0097a7', opacity: 0.70, transparent: true,
+        color: tealAccent.clone().lerp(darkTech, 0.5).getHex(), opacity: 0.70, transparent: true,
     }), []);
-    // Solar panels — cyan tones
+    // Solar panels — cyan/teal gradient
     const wSolar = useMemo(() => new THREE.LineBasicMaterial({
-        color: '#00e5ff', opacity: 1.0, transparent: true,
+        color: tealAccent.getHex(), opacity: 1.0, transparent: true,
     }), []);
     const wSolarDim = useMemo(() => new THREE.LineBasicMaterial({
-        color: '#00bcd4', opacity: 0.82, transparent: true,
+        color: orangeAccent.clone().lerp(tealAccent, 0.4).getHex(), opacity: 0.82, transparent: true,
     }), []);
-    // Extra fine wireframe for hull detail
+    // Ultra-fine wireframe for hull detail in deep blue
     const wUltraFine = useMemo(() => new THREE.LineBasicMaterial({
-        color: '#006064', opacity: 0.60, transparent: true,
+        color: blueAccent.getHex(), opacity: 0.60, transparent: true,
     }), []);
-    // Accent dots — keep orange for contrast
+    // Accent dots — orange for blockchain contrast
     const dotOrange = useMemo(() => new THREE.MeshBasicMaterial({
-        color: '#F26522', opacity: 1.0, transparent: true,
+        color: orangeAccent.getHex(), opacity: 1.0, transparent: true,
     }), []);
-    // Cyan glow dots (replace white dots)
+    // Cyan glow dots with pulse animation
     const dotCyan = useMemo(() => new THREE.MeshBasicMaterial({
-        color: '#00e5ff', opacity: 0.95, transparent: true,
+        color: tealAccent.getHex(), opacity: 0.95, transparent: true,
     }), []);
-    // Fill (dark teal, for depth cue)
-    const fillMat = useMemo(() => new THREE.MeshBasicMaterial({
-        color: '#001a1a', opacity: 0.10, transparent: true, side: THREE.DoubleSide,
+    // Fill material with subtle tech gradient
+    const fillMat = useMemo(() => new THREE.MeshStandardMaterial({
+        color: '#080814', metalness: 0.1, roughness: 0.9, side: THREE.DoubleSide,
     }), []);
-    // Emissive glow mesh for body highlights
+    // Enhanced emissive glow with slight shader-like quality
     const glowMat = useMemo(() => new THREE.MeshBasicMaterial({
-        color: '#00e5ff', opacity: 0.04, transparent: true, side: THREE.DoubleSide,
+        color: tealAccent.getHex(), opacity: 0.04, transparent: true, side: THREE.DoubleSide,
+    }), []);
+    // MeshStandardMaterial for shaded areas (representing semiconductors/nanotechnology)
+    const shadedMat = useMemo(() => new THREE.MeshStandardMaterial({
+        color: '#0a0a1a', metalness: 0.4, roughness: 0.6, side: THREE.DoubleSide,
+    }), []);
+    // Blockchain accent material with slight glow
+    const blockchainMat = useMemo(() => new THREE.MeshBasicMaterial({
+        color: orangeAccent.getHex(), opacity: 0.3, transparent: true,
+    }), []);
+    // AI/software ecosystem matte finish
+    const aiMat = useMemo(() => new THREE.MeshStandardMaterial({
+        color: '#1a1a3a', metalness: 0.2, roughness: 0.8,
+    }), []);
+
+// ── Tech Accent Materials (Skills: threejs-shaders, threejs-materials) ─────────
+    // Semiconductor die materials with subtle facet shading
+    const semiMatBright = useMemo(() => new THREE.MeshStandardMaterial({
+        color: tealAccent.getHex(), metalness: 0.5, roughness: 0.3,
+        emissive: tealAccent.getHex(), emissiveIntensity: 0.02,
+    }), []);
+    const semiMatDim = useMemo(() => new THREE.MeshStandardMaterial({
+        color: tealAccent.clone().lerp(darkTech, 0.5).getHex(), metalness: 0.2, roughness: 0.6,
+    }), []);
+    // Network link materials
+    const netMat = useMemo(() => new THREE.LineBasicMaterial({
+        color: tealAccent.getHex(), opacity: 0.9, transparent: true,
+        // @skill: threejs-line-properties
+        linewidth: 2,
+    }), []);
+    // AI neural network node materials
+    const aiNodeMat = useMemo(() => new THREE.MeshStandardMaterial({
+        color: blueAccent.getHex(), metalness: 0.8, roughness: 0.1,
+        flatShading: true,
+    }), []);
+    // Blockchain accent materials with glow
+    const blockchainGlow = useMemo(() => new THREE.MeshBasicMaterial({
+        color: orangeAccent.getHex(), opacity: 0.15, transparent: true, side: THREE.DoubleSide,
+    }), []);
+    // Software ecosystem matte finish
+    const ecoMat = useMemo(() => new THREE.MeshStandardMaterial({
+        color: '#1a1a3a', metalness: 0.1, roughness: 0.9,
+    }), []);
+    // Gradient tech background material
+    const techGradMat = useMemo(() => new THREE.MeshStandardMaterial({
+        color: '#050510', metalness: 0.2, roughness: 0.8,
     }), []);
 
     // ── Geometries ─────────────────────────────
@@ -320,6 +375,39 @@ const AdvancedSatellite = () => {
     // Thrusters
     const thrusterWire = useMemo(() => makeCylWireframe(0.07, 0.2, 16, 5), []);
 
+    // ── Tech Accent Geometries (Skills: threejs-shaders, threejs-materials) ─────────
+    // Semiconductor die patterns (teal/cyan)
+    const semiDieGeo = useMemo(() => new THREE.BoxGeometry(0.12, 0.12, 0.02), []);
+    // Network connection nodes
+    const netNodeGeo = useMemo(() => new THREE.SphereGeometry(0.03, 12, 12), []);
+    // AI/software abstract nodes
+    const aiNodeGeo = useMemo(() => new THREE.IcosahedronGeometry(0.04, 0), []);
+    // Blockchain link chains
+    const chainLinkGeo = useMemo(() => {
+        const points = [];
+        for (let i = 0; i <= 8; i++) {
+            const theta = (i / 8) * Math.PI * 2;
+            const radius = 0.03 + Math.sin(i * 0.8) * 0.01;
+            points.push(new THREE.Vector3(Math.cos(theta) * radius, 0, Math.sin(theta) * radius));
+        }
+        return new THREE.BufferGeometry().setFromPoints(points);
+    }, []);
+    // Software ecosystem cluster
+    const ecoClusterGeo = useMemo(() => {
+        const points = [];
+        for (let i = 0; i < 12; i++) {
+            const theta = (i / 12) * Math.PI * 2;
+            const phi = Math.acos(1 - (2 * i) / 12);
+            const r = 0.025;
+            points.push(new THREE.Vector3(
+                r * Math.sin(phi) * Math.cos(theta),
+                r * Math.sin(phi) * Math.sin(theta),
+                r * Math.cos(phi)
+            ));
+        }
+        return new THREE.BufferGeometry().setFromPoints(points);
+    }, []);
+
     // RCS pod (small box)
     const rcsGeo = useMemo(() => makePanelBox(0.1, 0.06, 0.08), []);
 
@@ -344,32 +432,36 @@ const AdvancedSatellite = () => {
     useFrame((state, delta) => {
         if (!groupRef.current || !inView) return;
 
-        const t = clock.getElapsedTime();
+        const t = state.clock.getElapsedTime();
 
         // 1. Logika Rotasi
-        const tx = (state.pointer.y * Math.PI) / 8;
-        const ty = (state.pointer.x * Math.PI) / 8;
+        const targetX = (state.pointer?.y ?? 0) * Math.PI / 8;
+        const targetY = (state.pointer?.x ?? 0) * Math.PI / 8;
         groupRef.current.rotation.x = THREE.MathUtils.lerp(
-            groupRef.current.rotation.x, tx, 0.035
+            groupRef.current.rotation.x, targetX, 0.03
         );
         groupRef.current.rotation.y = THREE.MathUtils.lerp(
-            groupRef.current.rotation.y, ty + t * 0.065, 0.035
+            groupRef.current.rotation.y, targetY + t * 0.04, 0.03
         );
 
-        // 2. Logika Hover: Transisi warna material wireframe secara halus
-        const targetColor = new THREE.Color(hovered.current ? '#F26522' : '#00e5ff');
-        wBright.color.lerp(targetColor, 0.1);
-        wMid.color.lerp(targetColor, 0.1);
+
 
         // 3. Logika Pulse: Lampu indikator (cepat) dan aliran energi panel (lambat)
-        const beaconPulse = 0.3 + Math.abs(Math.sin(t * 3)) * 0.7;
+const beaconPulse = 0.3 + Math.abs(Math.sin(t * 3)) * 0.7;
         const energyPulse = 0.6 + Math.sin(t * 1.5) * 0.4;
+        const semiconductorPulse = 0.5 + Math.cos(t * 2) * 0.3;
 
-        // 4. Terapkan opacity ke material untuk efek glow
+        // Apply opacity/glow to materials
         dotCyan.opacity = beaconPulse;
         dotOrange.opacity = beaconPulse;
         wSolar.opacity = energyPulse;
         glowMat.opacity = 0.02 + (energyPulse * 0.03);
+
+        // Semiconductor teal accent subtle pulse
+        shadedMat.opacity = semiconductorPulse * 0.1;
+
+        // Blockchain orange accent subtle fade
+        blockchainMat.opacity = 0.2 + Math.sin(t * 2) * 0.05;
     });
 
     // ── Solar Panel component (100% wireframe) ──
@@ -415,14 +507,6 @@ const AdvancedSatellite = () => {
             rotation={[0.18, 0.5, 0.1]}
             scale={1.15}
             position={[-0.35, 0, 0]}
-            onPointerOver={(e) => {
-                e.stopPropagation();
-                hovered.current = true;
-            }}
-            onPointerOut={(e) => {
-                e.stopPropagation();
-                hovered.current = false;
-            }}
         >
 
             {/* ══════════════════════════════════════
@@ -446,11 +530,14 @@ const AdvancedSatellite = () => {
             ))}
 
             {/* End caps: big rings */}
-            {[-1.0, 1.0].map((z, i) => (
-                <mesh key={i} geometry={bigRingGeo} rotation={[Math.PI / 2, 0, 0]} position={[0, 0, z]}>
-                    <primitive object={wBright} attach="material" />
-                </mesh>
-            ))}
+            {[-1.0, 1.0].map((z, i) => {
+                const isBlockchainSide = i === 0;
+                return (
+                    <mesh key={i} geometry={bigRingGeo} rotation={[Math.PI / 2, 0, 0]} position={[0, 0, z]}>
+                        <primitive object={isBlockchainSide ? blockchainMat : wBright} attach="material" />
+                    </mesh>
+                );
+            })}
 
             {/* ══════════════════════════════════════
                 FORWARD MODULE (Pressurized Mating Adapter)
@@ -460,9 +547,23 @@ const AdvancedSatellite = () => {
                     <cylinderGeometry args={[0.34, 0.44, 0.75, 12]} />
                     <primitive object={fillMat} attach="material" />
                 </mesh>
+                {/* Semiconductor chip indicators - teal accents for nanotechnology */}
+                {[-0.1, 0, 0.1].map((x, i) => (
+                    <mesh key={i} position={[x, 0.15, 0]}>
+                        <boxGeometry args={[0.04, 0.04, 0.04]} />
+                        <primitive object={semiMatBright} attach="material" />
+                    </mesh>
+                ))}
                 <lineSegments geometry={fwdModuleWire} rotation={[Math.PI / 2, 0, 0]}>
                     <primitive object={wBright} attach="material" />
                 </lineSegments>
+                {/* Orange blockchain accent nodes near forward module wireframe */}
+                {[0.15, -0.15, 0].map((x, idx) => (
+                    <mesh key={idx} position={[x, 0.2, 0]}>
+                        <sphereGeometry args={[0.03]} />
+                        <primitive object={dotOrange} attach="material" />
+                    </mesh>
+                ))}
 
                 {/* Docking cone */}
                 <group position={[0, 0, -0.56]} rotation={[-Math.PI / 2, 0, 0]}>
@@ -588,6 +689,10 @@ const AdvancedSatellite = () => {
                 {/* Dish rim (torus) */}
                 <mesh geometry={dishRimGeo}>
                     <primitive object={wBright} attach="material" />
+                </mesh>
+                {/* Blockchain connectivity accent - orange glow around dish rim */}
+                <mesh geometry={dishRimGeo} scale={1.06}>
+                    <primitive object={blockchainMat} attach="material" />
                 </mesh>
                 {/* Spokes + rings + feed horn */}
                 <lineSegments geometry={dishGeo}>
@@ -899,14 +1004,29 @@ export const Hero = () => {
                 <motion.div
                     style={{ scale: objScale, opacity: objOpacity, y: objY }}
                     className="relative w-full h-[55vh] md:h-[90vh] pointer-events-auto"
+                    aria-label="Advanced satellite 3D wireframe model"
                 >
+                    <ErrorBoundary fallback={<div className="min-h-screen text-stark-white w-full overflow-x-relative relative selection:bg-tech-orange selection:text-white bg-[var(--bg-base)]">
+                    <div className="min-h-screen relative">
+                        <h1 className="text-xl py-4">3D Satellite Unavailable</h1>
+                        <p className="text-white/60">Unable to load the 3D satellite visualization.</p>
+                        <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999] focus:bg-[#F2651] focus:text-white focus:px-4 focus:py-2 focus:text-sm focus:rounded">
+                            Skip to content
+                        </a>
+                    </div>
+                </div>}>
                     <Canvas
                         camera={{ position: [0, 0, 9], fov: 50 }}
                         style={{ background: 'transparent', width: '100%', height: '100%' }}
                         gl={{ antialias: true, alpha: true }}
+                        aria-describedby="satellite-description"
                     >
                         <AdvancedSatellite />
                     </Canvas>
+                </ErrorBoundary>
+                    <span className="sr-only" id="satellite-description">
+                        Advanced satellite 3D wireframe model — ISS-inspired design with solar panels, dish antenna, truss structure, and RCS thrusters
+                    </span>
                 </motion.div>
 
                 {/* RIGHT: Text */}
@@ -939,17 +1059,7 @@ export const Hero = () => {
                         style={{ fontFamily: 'var(--font-nero)', color: 'transparent', WebkitTextStroke: '1.5px rgba(255,255,255,0.35)' }}
                     />
 
-                    <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 1.4, duration: 0.8 }}
-                        className="flex items-center gap-4 mt-6"
-                    >
-                        <div className="h-[1px] w-8 shrink-0" style={{ background: 'var(--brand-dim)' }} />
-                        <span className="text-[var(--label-sm)] font-mono tracking-[0.25em] uppercase whitespace-nowrap" style={{ color: 'rgba(255,255,255,0.3)' }}>
-                            Design · Build · Scale
-                        </span>
-                    </motion.div>
+
                 </motion.div>
             </div>
 

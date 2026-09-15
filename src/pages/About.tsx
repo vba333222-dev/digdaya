@@ -72,6 +72,7 @@ const SplitReveal = ({ text, delay = 0, className = '', style = {} }: {
     const inView = useInView(ref, { once: true, margin: '-60px 0px' });
     return (
         <span ref={ref} className={`block overflow-hidden ${className}`} style={style}>
+            <span className="sr-only">{text}</span>
             <motion.span
                 className="flex flex-wrap"
                 initial="hidden"
@@ -151,6 +152,7 @@ const ParallaxGhost = ({ text, speed = 0.12 }: { text: string; speed?: number })
                 style={{ y, fontFamily: 'var(--font-nero)', color: 'transparent', WebkitTextStroke: '1px rgba(255,255,255,0.025)' }}
                 className="text-[28vw] font-black uppercase leading-none"
             >
+                <span className="sr-only">{text}</span>
                 {text}
             </motion.span>
         </div>
@@ -201,6 +203,7 @@ export function About() {
                             opacity: heroOpacity,
                         } as any}
                     >
+                        <span className="sr-only">ABOUT</span>
                         ABOUT
                     </motion.span>
                 </div>

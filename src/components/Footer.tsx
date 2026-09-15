@@ -53,31 +53,13 @@ const FadeUp = ({ children, delay = 0, className = '' }: {
 
 // ─── Magnetic CTA link ────────────────────────────────────────────────────────
 const MagneticCTA = ({ href, children }: { href: string; children: React.ReactNode }) => {
-    const ref = useRef<HTMLAnchorElement>(null);
-    const x = useMotionValue(0);
-    const y = useMotionValue(0);
-    const sx = useSpring(x, { stiffness: 180, damping: 18 });
-    const sy = useSpring(y, { stiffness: 180, damping: 18 });
-
-    const handleMove = (e: React.MouseEvent) => {
-        const rect = ref.current?.getBoundingClientRect();
-        if (!rect) return;
-        x.set((e.clientX - rect.left - rect.width / 2) * 0.18);
-        y.set((e.clientY - rect.top - rect.height / 2) * 0.18);
-    };
-    const handleLeave = () => { x.set(0); y.set(0); };
-
     return (
-        <motion.a
-            ref={ref}
+        <a
             href={href}
-            onMouseMove={handleMove}
-            onMouseLeave={handleLeave}
-            style={{ x: sx, y: sy }}
             className="inline-block"
         >
             {children}
-        </motion.a>
+        </a>
     );
 };
 
@@ -250,45 +232,7 @@ export const Footer = () => {
             ════════════════════════════════════════════ */}
             <div className="relative max-w-[1560px] mx-auto px-6 md:px-16" style={{ zIndex: 10 }}>
 
-                {/* ── TOP META ROW ────────────────────────── */}
-                <FadeUp delay={0.1} className="flex items-center justify-between pt-16 md:pt-20 pb-16 md:pb-20 border-b border-white/[0.05]">
-                    {/* Left: label + tagline */}
-                    <div className="flex flex-col gap-3">
-                        <div className="flex items-center gap-3">
-                            <motion.div
-                                className="w-1.5 h-1.5 rounded-full bg-[#F26522]"
-                                animate={{ scale: [1, 1.6, 1], opacity: [1, 0.3, 1] }}
-                                transition={{ repeat: Infinity, duration: 2.2, ease: 'easeInOut' }}
-                            />
-                            <span className="text-[0.5rem] font-mono tracking-[0.4em] text-[#F26522] uppercase">
-                                Contact
-                            </span>
-                        </div>
-                        <p className="text-[0.6rem] font-mono tracking-[0.15em] text-white/20 uppercase max-w-[28ch]">
-                            Building physical & digital futures — Jakarta, Indonesia
-                        </p>
-                    </div>
 
-                    {/* Right: email CTA */}
-                    <motion.a
-                        href="mailto:hello@digdaya.id"
-                        className="hidden md:flex items-center gap-3 group"
-                        whileHover={{ x: 4 }}
-                        transition={{ duration: 0.3 }}
-                    >
-                        <span className="text-[0.65rem] font-mono tracking-[0.2em] text-white/25 uppercase group-hover:text-[#F26522] transition-colors duration-400">
-                            hello@digdaya.id
-                        </span>
-                        <div
-                            className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center group-hover:border-[#F26522]/50 transition-colors duration-400"
-                            style={{ background: 'rgba(255,255,255,0.03)' }}
-                        >
-                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                                <path d="M2 10L10 2M10 2H4M10 2V8" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" className="text-white/30 group-hover:text-[#F26522] transition-colors duration-400" />
-                            </svg>
-                        </div>
-                    </motion.a>
-                </FadeUp>
 
                 {/* ── HERO CTA ─────────────────────────────── */}
                 <motion.div
@@ -391,7 +335,7 @@ export const Footer = () => {
                             <Link
                                 key={link.label}
                                 to={link.href}
-                                className="group flex items-center gap-2 text-[0.8rem] font-light text-white/28 hover:text-white transition-all duration-300 w-fit"
+                                className="group flex items-center gap-2 text-[0.8rem] font-light text-white/28 hover:text-white transition-all duration-300 w-fit focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#F26522]"
                             >
                                 <span className="w-3 h-px bg-white/15 group-hover:bg-white/50 group-hover:w-5 transition-all duration-300" />
                                 {link.label}
@@ -404,15 +348,15 @@ export const Footer = () => {
                         <span className="text-[0.48rem] font-mono tracking-[0.38em] text-white/35 uppercase mb-3">
                             Connect
                         </span>
-                        {[
-                            { label: 'LinkedIn', href: '#', hint: '↗' },
-                            { label: 'Twitter/X', href: '#', hint: '↗' },
-                            { label: 'GitHub', href: '#', hint: '↗' },
-                        ].map((link) => (
+{[
+                                { label: 'LinkedIn', href: '#', hint: '↗' },
+                                { label: 'Twitter/X', href: '#', hint: '↗' },
+                                { label: 'GitHub', href: '#', hint: '↗' },
+                            ].map((link) => (
                             <motion.a
                                 key={link.label}
                                 href={link.href}
-                                className="group flex items-center justify-between text-[0.8rem] font-light text-white/28 hover:text-white transition-all duration-300 w-fit gap-6"
+                                className="group flex items-center justify-between text-[0.8rem] font-light text-white/28 hover:text-white transition-all duration-300 w-fit gap-6 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#F26522]"
                                 whileHover={{ x: 4 }}
                             >
                                 <span>{link.label}</span>
@@ -432,9 +376,9 @@ export const Footer = () => {
                             <Link
                                 key={link.label}
                                 to={link.href}
-                                className="text-[0.8rem] font-light text-white/20 hover:text-white/50 transition-colors duration-300 w-fit"
+                                className="text-[0.8rem] font-light text-white/20 hover:text-white/50 transition-colors duration-300 w-fit focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#F26520]"
                             >
-                                {link.label}
+{link.label}
                             </Link>
                         ))}
                     </FadeUp>
@@ -489,29 +433,7 @@ export const Footer = () => {
                         </span>
                     </div>
 
-                    {/* Right: system status row */}
-                    <div className="flex items-center gap-5 md:gap-6">
-                        {/* Version tag */}
-                        <div
-                            className="flex items-center gap-2 px-2.5 py-1 rounded border border-white/[0.07]"
-                            style={{ background: 'rgba(255,255,255,0.02)' }}
-                        >
-                            <span className="text-[0.42rem] font-mono text-white/20 tracking-[0.2em] uppercase">
-                                sys.v2.0.26
-                            </span>
-                        </div>
 
-                        {/* Status indicator */}
-                        <div className="flex items-center gap-2">
-                            <span className="relative flex h-1.5 w-1.5">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-40" />
-                                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500" />
-                            </span>
-                            <span className="text-[0.45rem] font-mono text-white/30 tracking-[0.18em] uppercase">
-                                All systems operational
-                            </span>
-                        </div>
-                    </div>
                 </motion.div>
             </div>
 

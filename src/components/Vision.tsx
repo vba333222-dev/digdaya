@@ -233,26 +233,6 @@ export const Vision = () => {
                 >
                     <div className="w-full max-w-[1440px] mx-auto px-6 md:px-16">
 
-                        {/* ── Section label ── */}
-                        <motion.div
-                            style={{ opacity: taglineOpacity }}
-                            className="flex items-center justify-between mb-10 md:mb-14"
-                        >
-                            <div className="flex items-center gap-4">
-                                <motion.div
-                                    className="w-1.5 h-1.5 rounded-full bg-[#F26522]"
-                                    animate={{ scale: [1, 1.7, 1], opacity: [1, 0.35, 1] }}
-                                    transition={{ repeat: Infinity, duration: 2.4, ease: 'easeInOut' }}
-                                />
-                                <span className="text-[0.55rem] font-mono tracking-[0.35em] text-[#F26522] uppercase">
-                                    Our Vision
-                                </span>
-                                <div className="h-px w-10 bg-[#F26522]/25" />
-                            </div>
-                            <span className="hidden md:block text-[0.5rem] font-mono tracking-[0.3em] text-white/20 uppercase">
-                                Est. 2019
-                            </span>
-                        </motion.div>
 
                         {/* ── Typography ── */}
                         <div className="flex flex-col gap-1 md:gap-2">

@@ -114,7 +114,7 @@ export const Header = () => {
                             className={`text-[var(--label-sm)] font-mono tracking-[0.2em] uppercase transition-colors duration-300 ${location.pathname === link.to
                                 ? 'text-[var(--brand)]'
                                 : 'text-white/40 hover:text-white'
-                                }`}
+                                } focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#F26522]`}
                         >
                             {link.label}
                         </Link>

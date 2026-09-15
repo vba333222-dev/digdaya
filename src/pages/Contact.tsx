@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { NoiseTexture } from '../components/NoiseTexture';
 import { SEO } from '../components/SEO';
+import { OperationalMap } from '../components/OperationalMap';
 
 // ─── Animated counter for a subtle "live" feel ───────────────────────────────
 function LiveIndicator() {
@@ -202,6 +203,7 @@ function FormField({
                     rows={5}
                     placeholder={placeholder}
                     className={baseClass}
+                    aria-label={label}
                     onFocus={() => setFocused(true)}
                     onBlur={() => setFocused(false)}
                     onChange={e => setHasValue(e.target.value.length > 0)}
@@ -211,6 +213,7 @@ function FormField({
                     type={type}
                     placeholder={placeholder}
                     className={baseClass}
+                    aria-label={label}
                     onFocus={() => setFocused(true)}
                     onBlur={() => setFocused(false)}
                     onChange={e => setHasValue(e.target.value.length > 0)}
@@ -290,17 +293,18 @@ export function Contact() {
                     </p>
                 </div>
 
-                <h1 className="fade-up-3 text-[4.5rem] md:text-[7rem] lg:text-[10rem] font-black uppercase leading-[0.88] tracking-tighter mb-6"
-                    style={{ fontFamily: "var(--font-nero)" }}>
-                    <GlitchHeading text="GET IN" />
-                    <br />
-                    <span className="text-outline" style={{
-                        WebkitTextStroke: '1px rgba(255,255,255,0.25)',
-                        color: 'transparent',
-                    }}>
-                        TOUCH
-                    </span>
-                </h1>
+<h1 className="fade-up-3 text-[4.5rem] md:text-[7rem] lg:text-[10rem] font-black uppercase leading-[0.88] tracking-tighter mb-6"
+                        style={{ fontFamily: "var(--font-nero)" }}>
+                        <GlitchHeading text="GET IN" />
+                        <br />
+                        <span className="text-outline" style={{
+                            WebkitTextStroke: '1px rgba(255,255,255,0.25)',
+                            color: 'transparent',
+                        }}>
+                            <span className="sr-only">TOUCH</span>
+                            TOUCH
+                        </span>
+                    </h1>
 
                 {/* Divider */}
                 <div className="divider-line mb-16" />
@@ -451,7 +455,7 @@ export function Contact() {
                                             * All fields are confidential
                                         </p>
                                         <MagneticButton
-                                            className="send-btn relative overflow-hidden bg-white text-black font-mono text-[11px] font-bold uppercase tracking-[0.2em] py-5 px-10 hover:text-white transition-colors duration-500 flex items-center gap-3"
+                                            className="send-btn relative overflow-hidden bg-white text-black font-mono text-[11px] font-bold uppercase tracking-[0.2em] py-5 px-10 hover:text-white transition-colors duration-500 flex items-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#F26522]"
                                             type="submit"
                                         >
                                             <span>{submitting ? 'Sending...' : 'Send Message'}</span>
@@ -469,6 +473,16 @@ export function Contact() {
                             )}
                         </form>
                     </div>
+                </div>
+            </div>
+
+            {/* Operational area — 3D map with live directions */}
+            <div className="fade-up-4 relative z-10 px-6 md:px-12 lg:px-16 pb-24">
+                <p className="font-mono text-[10px] tracking-[0.3em] text-[var(--brand)] uppercase mb-6">
+                    — Where we operate
+                </p>
+                <div className="relative w-full h-[70vh] border border-white/8">
+                    <OperationalMap />
                 </div>
             </div>
 
@@ -492,7 +506,7 @@ function ServiceTag({ label }: { label: string }) {
         <button
             type="button"
             onClick={() => setActive(a => !a)}
-            className="font-mono text-[10px] uppercase tracking-widest px-4 py-2 border transition-all duration-300"
+            className="font-mono text-[10px] uppercase tracking-widest px-4 py-2 border transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#F26520]"
             style={{
                 borderColor: active ? 'var(--brand)' : 'rgba(255,255,255,0.15)',
                 color: active ? 'var(--brand)' : 'rgba(255,255,255,0.4)',

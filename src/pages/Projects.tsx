@@ -38,6 +38,7 @@ const SplitReveal = ({ text, delay = 0, className = '', style = {} }: {
     const inView = useInView(ref, { once: true, margin: '-40px 0px' });
     return (
         <span ref={ref} className={`block overflow-hidden ${className}`} style={style}>
+            <span className="sr-only">{text}</span>
             <motion.span
                 className="flex flex-wrap"
                 initial="hidden"

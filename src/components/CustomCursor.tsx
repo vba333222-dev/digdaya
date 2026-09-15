@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { motion, useMotionValue, useSpring } from 'framer-motion';
 
-// SVG logo Digdaya — path diambil langsung dari file asli.
-// viewBox 131×148, tiga elemen:
-//   1. Rounded capsule abu-abu  (group offset 28,41)
-//   2. Lingkaran abu-abu        (di origin)
-//   3. Rounded capsule oranye   (group offset 37,38)
+// Check for reduced motion using matchMedia API
+const reducedMotion = typeof window !== 'undefined'
+  ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  : false;
+
 const DigdayaIcon = () => (
     <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -29,16 +29,6 @@ const DigdayaIcon = () => (
                L 4.988281 32.433594
                C 1.777344 28.410156 0.296875 23.277344 0.871094 18.164062
                C 1.445312 13.050781 4.027344 8.375 8.046875 5.164062 Z"
-        />
-
-        {/* ── Grey circle (top-left accent) — path dari clipPath f424a07c13 ── */}
-        <path
-            fill="#737373"
-            d="M 20.34375 0.992188
-               C 9.304688 0.992188 0.355469 9.941406 0.355469 20.980469
-               C 0.355469 32.019531 9.304688 40.96875 20.34375 40.96875
-               C 31.382812 40.96875 40.332031 32.019531 40.332031 20.980469
-               C 40.332031 9.941406 31.382812 0.992188 20.34375 0.992188 Z"
         />
 
         {/* ── Orange capsule (front) — path dari clipPath aa7a0d3885, di-offset (37,38) ── */}
@@ -69,40 +59,21 @@ export const CustomCursor = () => {
     const cursorY = useSpring(mouseY, springConfig);
 
     const isTouchDevice = typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
-    const [isHovering, setIsHovering] = useState(false);
 
     useEffect(() => {
-        if (isTouchDevice) return;
+        if (isTouchDevice || reducedMotion) return;
 
-        const moveCursor = (e: MouseEvent) => {
+        const moveCursor = (e) => {
             mouseX.set(e.clientX - 6);
             mouseY.set(e.clientY - 6);
         };
 
-        const handleMouseOver = (e: MouseEvent) => {
-            const target = e.target as HTMLElement;
-            if (target.closest('a, button, [role="button"]')) {
-                setIsHovering(true);
-            }
-        };
-
-        const handleMouseOut = (e: MouseEvent) => {
-            const target = e.target as HTMLElement;
-            if (target.closest('a, button, [role="button"]')) {
-                setIsHovering(false);
-            }
-        };
-
         window.addEventListener('mousemove', moveCursor);
-        window.addEventListener('mouseover', handleMouseOver);
-        window.addEventListener('mouseout', handleMouseOut);
 
         return () => {
             window.removeEventListener('mousemove', moveCursor);
-            window.removeEventListener('mouseover', handleMouseOver);
-            window.removeEventListener('mouseout', handleMouseOut);
         };
-    }, [mouseX, mouseY, isTouchDevice]);
+    }, [mouseX, mouseY, isTouchDevice, reducedMotion]);
 
     if (isTouchDevice) {
         return null;
@@ -115,11 +86,6 @@ export const CustomCursor = () => {
                 x: cursorX,
                 y: cursorY,
             }}
-            animate={{
-                scale: isHovering ? 1.5 : 1,
-                opacity: isHovering ? 0.8 : 1
-            }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
         >
             <DigdayaIcon />
         </motion.div>

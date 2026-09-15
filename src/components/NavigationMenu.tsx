@@ -95,12 +95,12 @@ const NavItem = ({
                 style={{ x: springX, y: springY }}
                 className="relative"
             >
-                <Link
-                    ref={ref}
-                    to={link.href}
-                    onClick={onClose}
-                    className="group flex items-baseline gap-5 cursor-pointer select-none"
-                >
+<Link
+                        ref={ref}
+                        to={link.href}
+                        onClick={onClose}
+                        className="group flex items-baseline gap-5 cursor-pointer select-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#F26522]"
+                    >
                     {/* Active indicator */}
                     {isActive && (
                         <motion.div
@@ -121,6 +121,9 @@ const NavItem = ({
 
                     {/* Main label */}
                     <span className="relative overflow-hidden block">
+                        {/* Accessible text for screen readers */}
+                        <span className="sr-only">{link.label}</span>
+
                         {/* Default text */}
                         <motion.span
                             animate={{ y: isHovered ? '-105%' : '0%' }}
@@ -138,13 +141,14 @@ const NavItem = ({
                         <motion.span
                             animate={{ y: isHovered ? '0%' : '105%' }}
                             transition={{ duration: 0.55, ease: [0.76, 0, 0.24, 1] }}
-                            className="absolute inset-0 block text-[13vw] md:text-[6.5vw] font-black uppercase leading-[0.88] tracking-[-0.035em]"
+                            className="absolute inset-0 block text-[13vw] md:text-[6.5vw] font-black uppercase leading-[0.88] tracking-[-0.03em]"
                             style={{
                                 fontFamily: 'var(--font-nero)',
                                 color: 'transparent',
                                 WebkitTextStroke: '1.5px rgba(242,101,34,0.85)',
                             }}
                         >
+                            <span className="sr-only">{link.label}</span>
                             {link.label}
                         </motion.span>
                     </span>
@@ -262,7 +266,7 @@ export const NavigationMenu = ({
                     <div
                         className="absolute inset-0 pointer-events-none"
                         style={{
-                            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E")`,
+                            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E")`,
                             opacity: 0.6,
                         }}
                     />
@@ -310,6 +314,7 @@ export const NavigationMenu = ({
                                 WebkitTextStroke: '1px rgba(255,255,255,0.028)',
                             }}
                         >
+                            <span className="sr-only">Navigation menu</span>
                             NAV
                         </motion.span>
                     </div>
@@ -378,18 +383,7 @@ export const NavigationMenu = ({
                         exit={{ opacity: 0, y: 8 }}
                         className="absolute bottom-0 left-0 right-0 flex items-end justify-between px-6 md:px-12 lg:px-16 py-7 md:py-9"
                     >
-                        {/* Contact info */}
-                        <div className="flex flex-col gap-1">
-                            <span className="text-[0.58rem] font-mono text-white/20 tracking-[0.2em] uppercase">
-                                hello@digdaya.id
-                            </span>
-                            <div className="flex items-center gap-3">
-                                <div className="h-[1px] w-5" style={{ background: 'rgba(242,101,34,0.4)' }} />
-                                <span className="text-[0.58rem] font-mono text-white/14 tracking-wider">
-                                    Jakarta, Indonesia
-                                </span>
-                            </div>
-                        </div>
+                        <div className="flex flex-col gap-1"></div>
 
                         {/* Socials */}
                         <div className="flex items-center gap-5 md:gap-7">
